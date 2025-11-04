@@ -1,18 +1,20 @@
 #!/bin/sh
 set -e
 
-# Use upstream regulatory.db
+log() {
+    echo "$(tput setaf 6)[INFO]$(tput sgr0) $1"
+}
+
+log "Extend login timeout"
+sed -i '/^LOGIN_TIMEOUT/s/60/300/' /etc/login.defs
+
+log "Use upstream regulatory.db"
 update-alternatives --set regulatory.db /lib/firmware/regulatory.db-upstream
 
-# Remove SSH keys
+log "Remove Dropbear SSH keys"
 rm /etc/dropbear/dropbear_*_host_key*
 
-# Create swap file
-dd if=/dev/zero of=/swapfile bs=1M count=256 conv=fsync
-chmod 600 /swapfile
-mkswap /swapfile
-
-# Trigger systemd-firstboot
-rm /etc/machine-id
+log "Trigger systemd-firstboot"
+rm /etc/machine-id /etc/hostname
 
 exit 0

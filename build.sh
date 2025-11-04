@@ -25,7 +25,6 @@ DEBIAN_LINUX_CONFIG_FILE=./usr/src/linux-config-6.12/config.armel_none_rpi.xz
 
 DEBIAN_EXTRA_PACKAGES="cloud-guest-utils dropbear firmware-mediatek gpiod htop network-manager sudo wireless-regdb wpasupplicant"
 DEBIAN_COMPONENTS="main non-free-firmware"
-DEBIAN_MIRROR="http://deb.debian.org/debian"
 
 log() {
 	local level=$1
@@ -214,8 +213,11 @@ mmdebstrap \
 	--setup-hook='cp -r overlay/. "$1"/' \
 	--customize-hook='chroot "$1" /bin/sh < config-rootfs.sh' \
 	trixie \
-	rootfs \
-	"$DEBIAN_MIRROR"
+	rootfs
+log INFO "Creating swap file"
+dd if=/dev/zero of=rootfs/swapfile bs=1M count=256 conv=fsync
+chmod 600 rootfs/swapfile
+mkswap rootfs/swapfile
 log OK "Rootfs ready"
 
 log INFO "Installing modules"
