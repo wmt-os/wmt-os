@@ -8,7 +8,7 @@ export CFLAGS='-march=armv5te -mtune=arm926ej-s'
 REQUIRED_PACKAGES=(
 	bc binfmt-support bison build-essential debian-archive-keyring dosfstools
 	e2fsprogs flex gcc-arm-linux-gnueabi git jq libssl-dev lynx mmdebstrap
-	parted pigz pv qemu-user-static u-boot-tools zerofree
+	parted pigz pv qemu-user-binfmt u-boot-tools zerofree
 )
 
 KERNEL_REPO=https://github.com/lrussell887/linux-vtwm.git
@@ -57,7 +57,8 @@ cleanup() {
 
 	if [ -d "$KERNEL_DIR" ]; then
 		cd "$KERNEL_DIR"
-		git rebase --abort 2>/dev/null || true
+		git rebase --quit 2>/dev/null || true
+		git cherry-pick --quit 2>/dev/null || true
 		[ "$(git branch --show-current)" != "$KERNEL_BRANCH" ] && git switch -f "$KERNEL_BRANCH"
 		git branch -D rebase 2>/dev/null || true
 	fi
@@ -137,12 +138,8 @@ if [ -z "$skip_kernel" ]; then (
 			git config user.email "user@example.com"
 		fi
 
-		git switch -c rebase "$KERNEL_BRANCH^2"
 		git fetch --no-tags "$KERNEL_UPSTREAM_REPO" "v$upstream_kernel"
 		git rebase FETCH_HEAD
-		git switch "$KERNEL_BRANCH"
-		git merge --no-ff -m "rebase v$upstream_kernel" rebase
-		git branch -D rebase
 		log OK "Upgraded kernel"
 	fi
 
