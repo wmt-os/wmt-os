@@ -85,16 +85,13 @@ CONFIG_EXT4_FS=y
 
 # Security Options
 # CONFIG_AUDIT is not set
-# CONFIG_AUDITSYSCALL is not set
 # CONFIG_INTEGRITY is not set
 # CONFIG_SECURITY_APPARMOR is not set
-# CONFIG_SECURITY_IPE is not set
 # CONFIG_SECURITY_LANDLOCK is not set
 # CONFIG_SECURITY_LOCKDOWN_LSM is not set
 
 # Cryptographic API
 CONFIG_CRYPTO_LZ4=y
-CONFIG_CRYPTO_LZO=m
 
 # Kernel Hacking
 # CONFIG_KFENCE is not set
