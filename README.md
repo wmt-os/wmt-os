@@ -13,18 +13,18 @@ Development is focused on the Sylvania SYNET07526, the $99 Windows CE 6.0 netboo
 | **Backlight** | 🟢 | PWM brightness control |
 | **SD Card** | 🟢 | Native SD/MMC controller |
 | **Wi-Fi** | 🟢 | Internal USB adapter (toggled via GPIO) |
-| **USB Peripherals** | 🟢 | Keyboards, mice, mass storage, and networking |
+| **USB Peripherals** | 🟢 | Keyboards, mice, audio, storage, and networking |
 | **Graphics Acceleration** | | |
 | &nbsp;&nbsp;&nbsp;&nbsp;↳ *Kernel* | 🟢 | DRM/KMS driver with 2D and console acceleration |
 | &nbsp;&nbsp;&nbsp;&nbsp;↳ *Userspace* | 🟡 | Custom 2D IOCTL implemented; X11 driver pending |
-| **Built-in Audio** | 🔵 | Driver planned for the VT1613 codec |
-| **Battery Monitoring**| 🔴 | Charge level reporting unavailable |
+| **Built-in Audio** | 🟢 | Headphone and speaker output |
+| **Battery Monitoring** | 🔴 | Charge level reporting unavailable |
 | **Internal Storage** | 🔴 | NAND flash controller inaccessible |
 
 *(Legend: 🟢 Supported | 🟡 Partial | 🔵 Planned | 🔴 Unsupported)*
 
 ## Kernel
-This project is powered by the actively maintained [linux-vtwm](https://github.com/lrussell887/linux-vtwm) kernel fork, currently tracking the `6.12.y` LTS branch. Ongoing improvements are being made to hardware support, such as the introduction of a [modern DRM/KMS graphics driver](https://github.com/lrussell887/linux-vtwm/pull/1) to replace the legacy fbdev driver. If you are interested in legacy ARM development, contributions are welcome to help build out further support!
+This project is powered by the actively maintained [linux-vtwm](https://github.com/lrussell887/linux-vtwm) kernel fork, currently tracking the `6.12.y` LTS branch. Active development continues to modernize the SoC's hardware support, with recent work bringing new DRM/KMS, DMAEngine, and ASoC drivers to the platform. If you are interested in legacy ARM development, contributions are welcome to help build out further support!
 
 ## System Notes
 - **First Boot:** The first boot process takes less than 5 minutes. You will be prompted to configure your timezone, set a hostname, and create a root password.
@@ -125,4 +125,4 @@ If you prefer to upgrade manually from another Linux computer:
     ```
 
 ## Credits
-Special thanks to wh0's [bookconfig](https://github.com/wh0/bookconfig) for keeping the [linux-vtwm](https://github.com/linux-wmt/linux-vtwm) project alive up to this point. Additional thanks to projectgus's [kernel_wm8505](https://github.com/projectgus/kernel_wm8505) repository for archiving VIA's original BSP patches, having access to this historical code has proven invaluable to the modernization efforts.
+Special thanks to wh0's [bookconfig](https://github.com/wh0/bookconfig) for keeping the [linux-vtwm](https://github.com/linux-wmt/linux-vtwm) project alive up to this point. Additional thanks to projectgus's [kernel_wm8505](https://github.com/projectgus/kernel_wm8505) for archiving VIA's original BSP patches, having access to this historical code has proven invaluable to the modernization efforts.
