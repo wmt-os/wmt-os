@@ -30,8 +30,8 @@ ask() {
 # shellcheck disable=SC2329
 cleanup() {
 	log INFO "Cleaning up"
-	mountpoint -q /tmp/boot && umount /tmp/boot
-	rm -rf /tmp/upgrade.tmp* /tmp/upgrade /tmp/boot
+	mountpoint -q /var/tmp/boot && umount /var/tmp/boot
+	rm -rf /var/tmp/upgrade.tmp* /var/tmp/upgrade /var/tmp/boot
 	exit
 }
 
@@ -80,24 +80,24 @@ fi
 
 log INFO "Downloading upgrade tarball"
 upgrade_url=$(echo "$releases_json" | jq -r '.assets[] | select(.name | startswith("upgrade")) | .browser_download_url')
-aria2c --console-log-level=error --summary-interval=0 -d /tmp -o upgrade.tmp "$upgrade_url"
+aria2c --console-log-level=error --summary-interval=0 -d /var/tmp -o upgrade.tmp "$upgrade_url"
 log OK "Downloaded tarball"
 
 log INFO "Extracting tarball"
-mkdir /tmp/upgrade
-pv /tmp/upgrade.tmp | tar -xzf - -C /tmp/upgrade
+mkdir /var/tmp/upgrade
+pv /var/tmp/upgrade.tmp | tar -xzf - -C /var/tmp/upgrade
 log OK "Extracted tarball"
 
 log INFO "Installing boot images"
-mkdir /tmp/boot
-mount /dev/mmcblk0p1 /tmp/boot
-rm -rf /tmp/boot/*
-mv /tmp/upgrade/boot/* /tmp/boot/
+mkdir /var/tmp/boot
+mount /dev/mmcblk0p1 /var/tmp/boot
+rm -rf /var/tmp/boot/*
+mv /var/tmp/upgrade/boot/* /var/tmp/boot/
 log OK "Installed boot images"
 
 log INFO "Installing kernel modules"
 rm -rf /lib/modules/*
-mv /tmp/upgrade/rootfs/lib/modules/* /lib/modules/
+mv /var/tmp/upgrade/rootfs/lib/modules/* /lib/modules/
 log OK "Kernel upgrade complete"
 
 log WARN "New kernel modules cannot be loaded until you reboot"
