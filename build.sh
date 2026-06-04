@@ -218,7 +218,7 @@ mkswap rootfs/swapfile
 log OK "Rootfs ready"
 
 log INFO "Installing modules"
-make -C "$KERNEL_DIR" INSTALL_MOD_PATH=../rootfs modules_install
+make -C "$KERNEL_DIR" INSTALL_MOD_PATH=../rootfs INSTALL_MOD_STRIP=1 modules_install
 log OK "Installed modules"
 
 log INFO "Creating upgrade tarball"
