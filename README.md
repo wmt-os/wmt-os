@@ -1,7 +1,9 @@
-# Debian-WM8505
+# WMT OS
 This project delivers a complete, modern Debian 13 (Trixie) build for devices powered by the WonderMedia WM8505 SoC.
 
 Development is focused on the Sylvania SYNET07526, the $99 Windows CE 6.0 netbook [sold by CVS in late 2010](https://www.informationweek.com/it-leadership/cvs-offers-99-sylvania-netbook). Equipped with a 300 MHz single-core [ARM926EJ-S](https://en.wikipedia.org/wiki/ARM9#ARM9E-S_and_ARM9EJ-S) SoC (utilizing the same 2001 CPU architecture as the Nintendo Wii... or rather, its coprocessor), 128 MB of RAM, and an 800x480 display, it was considered e-waste even when it was first released. Naturally, that makes it an excellent candidate for a modern Linux distribution today.
+
+> **Disclaimer:** WMT OS is not affiliated with Debian. Debian is a registered trademark owned by Software in the Public Interest, Inc.
 
 ![Netbook running Debian 13 displaying Fastfetch](https://github.com/user-attachments/assets/a0ba3743-7c2e-4eb5-988c-63f511753e22)
 
@@ -11,6 +13,7 @@ Development is focused on the Sylvania SYNET07526, the $99 Windows CE 6.0 netboo
 | :--- | :---: | :--- |
 | **Display** | 🟢 | Native LCD output |
 | **Backlight** | 🟢 | PWM brightness control |
+| **Keyboard & Touchpad** | 🟢 | Native KBDC controller |
 | **SD Card** | 🟢 | Native SD/MMC controller |
 | **Wi-Fi** | 🟢 | Internal USB adapter (toggled via GPIO) |
 | **USB Peripherals** | 🟢 | Keyboards, mice, audio, storage, and networking |
@@ -24,7 +27,7 @@ Development is focused on the Sylvania SYNET07526, the $99 Windows CE 6.0 netboo
 *(Legend: 🟢 Supported | 🟡 Partial | 🔵 Planned | 🔴 Unsupported)*
 
 ## Kernel
-This project is powered by the actively maintained [linux-vtwm](https://github.com/lrussell887/linux-vtwm) kernel fork, currently tracking the `6.12.y` LTS branch. Active development continues to modernize the SoC's hardware support, with recent work bringing new DRM/KMS, DMAEngine, and ASoC drivers to the platform. If you are interested in legacy ARM development, contributions are welcome to help build out further support!
+This project is powered by the actively maintained [linux-wmt](https://github.com/lrussell887/linux-wmt) kernel fork, currently tracking the `6.12.y` LTS branch. Active development continues to modernize the SoC's hardware support, with recent work bringing new DRM/KMS, DMA engine, ASoC, CCF, and Serio drivers to the platform. If you are interested in legacy ARM development, contributions are welcome to help build out further support!
 
 ## System Notes
 - **First Boot:** The first boot process takes less than 5 minutes. You will be prompted to configure your timezone, set a hostname, and create a root password.
@@ -48,8 +51,8 @@ Building the OS image requires a Debian or Ubuntu-based host system due to its u
 
 1. Clone this repository and navigate to its directory:
     ```bash
-    git clone https://github.com/lrussell887/debian-wm8505.git
-    cd debian-wm8505/
+    git clone https://github.com/lrussell887/wmt-os.git
+    cd wmt-os/
     ```
 2. Run the build script (requires root privileges):
     ```bash
@@ -98,7 +101,7 @@ For upgrading an existing Debian installation to a newer kernel.
 ### Automated Upgrade (Recommended)
 Run the following command directly on your netbook (requires internet and root privileges):
 ```bash
-sudo bash -c "$(wget -q -O - https://raw.githubusercontent.com/lrussell887/debian-wm8505/master/upgrade-kernel.sh)"
+sudo bash -c "$(wget -q -O - https://raw.githubusercontent.com/lrussell887/wmt-os/master/upgrade-kernel.sh)"
 ```
 
 ### Manual Upgrade

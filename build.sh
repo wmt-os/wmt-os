@@ -11,9 +11,9 @@ REQUIRED_PACKAGES=(
 	parted pigz pv qemu-user-binfmt u-boot-tools zerofree
 )
 
-KERNEL_REPO=https://github.com/lrussell887/linux-vtwm.git
-KERNEL_BRANCH=kernel
-KERNEL_DIR=linux-vtwm
+KERNEL_REPO=https://github.com/lrussell887/linux-wmt.git
+KERNEL_BRANCH=wmt-6.12.y
+KERNEL_DIR=linux-wmt
 KERNEL_VERSION_PATTERN='^6\.12\.'
 
 KERNEL_UPSTREAM_RELEASES=https://www.kernel.org/releases.json

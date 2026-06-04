@@ -3,7 +3,7 @@ set -e
 
 REQUIRED_PACKAGES=(aria2 jq pv)
 
-KERNEL_RELEASES=https://api.github.com/repos/lrussell887/debian-wm8505/releases/latest
+KERNEL_RELEASES=https://api.github.com/repos/lrussell887/wmt-os/releases/latest
 
 log() {
 	local level=$1
