@@ -1,0 +1,6 @@
+Types: deb
+URIs: https://apt.lrussell.net/
+Suites: trixie
+Components: main
+Architectures: armel
+Signed-By: /etc/apt/keyrings/wmt-os.asc
