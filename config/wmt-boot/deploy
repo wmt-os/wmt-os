@@ -52,4 +52,8 @@ else
 	rm -rf "$boot/script"
 fi
 mv "$new" "$boot/script"
+# Drop the rollback slot if it now duplicates the active kernel.
+if [ "$(cat "$boot/script.bak/version" 2>/dev/null)" = "$version" ]; then
+	rm -rf "$boot/script.bak"
+fi
 sync
