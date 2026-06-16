@@ -31,7 +31,7 @@ export DEBIAN_CONFIG_FILE="./usr/src/linux-config-6.12/config.armel_none_rpi.xz"
 
 export DEBIAN_MIRROR="https://deb.debian.org/debian"
 export DEBIAN_COMPONENTS="main non-free-firmware"
-export DEBIAN_EXTRA_PACKAGES="cloud-guest-utils debian-archive-keyring dropbear firmware-mediatek gpiod htop network-manager sudo wireless-regdb wpasupplicant"
+export DEBIAN_EXTRA_PACKAGES="cloud-guest-utils debian-archive-keyring dropbear fastfetch firmware-mediatek gpiod htop network-manager sudo wireless-regdb wpasupplicant"
 export DEBIAN_DESKTOP_PACKAGES="xserver-xorg-core xserver-xorg-input-libinput xinit openbox xterm"
 
 # Image profile: standard | desktop
