@@ -49,7 +49,8 @@ cat > "$staging/DEBIAN/postinst" <<'EOF'
 #!/bin/sh
 set -e
 [ "$1" = configure ] || exit 0
-/usr/sbin/wmt-deploy-boot   # deploy the newest installed kernel
+# Refresh the active slot (preserves a manual rollback); newest on first install
+/usr/sbin/wmt-deploy-boot "$(cat /boot/uboot/script/version 2>/dev/null)"
 EOF
 chmod 755 "$staging/DEBIAN/postinst"
 dpkg-deb --root-owner-group --build "$staging" "$DEBS/wmt-boot_${PKG_VERSION}_all.deb" >/dev/null
