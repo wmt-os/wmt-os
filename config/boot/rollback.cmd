@@ -1,6 +1,6 @@
 @echo off
 REM WMT OS kernel rollback -- swap the active (script) and backup (script.bak) boot slots
-if "%OS%"=="Windows_NT" cd /d "%~dp0"
+cd %0\..
 cls
 echo  WMT OS  --  Kernel Rollback
 echo.
