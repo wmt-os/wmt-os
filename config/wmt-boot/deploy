@@ -1,23 +1,19 @@
 #!/bin/sh
-# Build the WM8505 U-Boot boot slot for a kernel and rotate the previous slot
-# into the rollback slot. Invoked by the /etc/kernel hooks and on wmt-boot
-# install. Arg 1: kernel version (default: newest installed image).
+# Build the WM8505 boot slot (uzImage.bin + scriptcmd) for a kernel and rotate the
+# previous slot to the rollback slot. Arg 1: version (default: newest installed).
 set -e
 
 boot=/boot/uboot
 template=/usr/share/wmt-boot/uboot.cmd
 
-# On a booted device the FAT must be mounted here; in the mmdebstrap chroot it is
-# a plain dir (no systemd) that mk-image later copies onto the real FAT, so the
-# check is skipped there. Guards against silently writing to the rootfs underlay
-# when a nofail FAT fails to mount on-device.
+# On a booted device the FAT must be mounted; in the build chroot it's a plain dir
+# (no systemd), so skip the check there rather than write to the rootfs underlay.
 if [ -d /run/systemd/system ] && ! mountpoint -q "$boot"; then
 	echo "wmt-deploy-boot: $boot is not mounted; refusing to write the boot slot" >&2
 	exit 1
 fi
 
-# Defer if mkimage is not ready yet (u-boot-tools unpacked but unconfigured during
-# bootstrap); wmt-boot's postinst redeploys once it is.
+# Defer if mkimage isn't ready (bootstrap ordering); wmt-boot's postinst redeploys.
 command -v mkimage >/dev/null 2>&1 || exit 0
 
 # Target kernel: the one passed in, else the newest installed image (by build time)
@@ -46,9 +42,8 @@ mkimage -A arm -O linux -T script -C none -a 1 -e 0 -n "script image" \
 printf '%s\n' "$version" > "$new/version"
 sync
 
-# Demote the active slot to the rollback slot only when it holds a DIFFERENT and
-# still-installed kernel, so a same-kernel redeploy or removal of the active kernel
-# never clobbers a good rollback. Then swap the new slot in.
+# Demote the active slot to rollback only if it holds a different, still-installed
+# kernel, so a redeploy or active-kernel removal can't clobber a good rollback.
 active=$(cat "$boot/script/version" 2>/dev/null || true)
 if [ -d "$boot/script" ] && [ "$active" != "$version" ] && [ -f "/boot/vmlinuz-$active" ]; then
 	rm -rf "$boot/script.bak"

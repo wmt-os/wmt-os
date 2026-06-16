@@ -9,8 +9,8 @@ PROFILE ?= standard
 # Source common.sh so the kernel build inherits ARCH, CROSS_COMPILE, and KCFLAGS
 KMAKE := source scripts/common.sh && $(MAKE) -C linux-wmt -j$(NPROC)
 
-# Rebuild the rootfs when its overlay, sources, or hooks change
-ROOTFS_DEPS := config/rootfs-hooks.sh $(shell find config/overlay config/sources -type f)
+# Rebuild the rootfs when its config (common.sh), overlay, sources, or hooks change
+ROOTFS_DEPS := scripts/common.sh config/rootfs-hooks.sh $(shell find config/overlay config/sources -type f)
 
 .DEFAULT_GOAL := help
 .NOTPARALLEL:

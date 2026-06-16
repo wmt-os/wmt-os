@@ -5,7 +5,7 @@ source "$(dirname "$0")/common.sh"
 
 cd "$KERNEL_DIR"
 
-RELEASE=$(make -s kernelrelease)              # uname -r, e.g. 6.12.93-wm8505
+RELEASE=$(make -s kernelrelease)              # uname -r, e.g. 6.12.93-wm8505-g<commit>
 KERNEL_PKG="linux-image-$RELEASE"             # versioned kernel package name
 # One UTC timestamp gives a monotonic deb revision; an upstream bump dominates it
 BUILD_STAMP=$(date -u +%Y%m%d%H%M%S)
@@ -18,13 +18,10 @@ mkdir -p "$DEBS"
 rm -f "$DEBS"/*.deb "$DEBS"/Packages.gz       # the local repo holds only this build
 
 log INFO "Building $KERNEL_PKG ($PKG_VERSION) with bindeb-pkg"
-# Objects are already built by the `kernel`/`modules` targets, so package
-# serially: parallel dtbs_install races on `install -d` (notably under uutils).
-# DPKG_FLAGS=-d: skip dpkg's target-arch build-dep check — we cross-compile with
-# the host's native toolchain (the recipe only auto-skips it on native builds).
+# Serial: parallel dtbs_install races on `install -d` (notably under uutils).
+# DPKG_FLAGS=-d skips the target-arch build-dep check (we cross-build natively).
 make bindeb-pkg KBUILD_DEBARCH=armel KDEB_PKGVERSION="$PKG_VERSION" KDEB_COMPRESS=xz DPKG_FLAGS=-d
-# Keep only the image deb; bindeb-pkg also drops headers/libc-dev/changes/buildinfo
-# beside it in the parent dir, which we discard.
+# Keep only the image deb; discard the headers/libc-dev/changes/buildinfo beside it.
 mv "$BASE_DIR/${KERNEL_PKG}_${PKG_VERSION}_"*.deb "$DEBS/"
 rm -f "$BASE_DIR"/linux-headers-*.deb "$BASE_DIR"/linux-libc-dev_*.deb \
 	"$BASE_DIR"/linux-upstream_*.buildinfo "$BASE_DIR"/linux-upstream_*.changes
@@ -44,9 +41,9 @@ Maintainer: $BUILDER_NAME <$BUILDER_EMAIL>
 Section: kernel
 Priority: optional
 Depends: u-boot-tools
-Description: WM8505 U-Boot boot integration
- Builds the U-Boot boot slot (uzImage.bin + scriptcmd) from an installed kernel
- and keeps the previous one as a rollback slot, via /etc/kernel hooks.
+Description: WonderMedia WM8505 boot integration
+ Sets up each installed kernel for the WM8505's U-Boot, keeping the previous
+ kernel as a one-step rollback.
 EOF
 cat > "$staging/DEBIAN/postinst" <<'EOF'
 #!/bin/sh
@@ -70,9 +67,8 @@ Section: kernel
 Priority: optional
 Depends: $KERNEL_PKG (= $PKG_VERSION), wmt-boot
 Description: Linux kernel for the WonderMedia WM8505 (metapackage)
- Tracks the latest $KERNEL_PKG and pulls in the boot integration. Each kernel is a
- distinct co-installable package; upgrading pulls the new one while apt keeps the
- previous one as a rollback target.
+ Depends on the latest WM8505 kernel and its boot integration, so "apt upgrade"
+ keeps the device on the current kernel.
 EOF
 dpkg-deb --root-owner-group --build "$staging" "$DEBS/${PACKAGE_NAME}_${PKG_VERSION}_armel.deb" >/dev/null
 rm -rf "$staging"
