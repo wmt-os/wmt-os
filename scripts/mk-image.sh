@@ -20,8 +20,8 @@ rm -f "$IMG_FILE"
 dd if=/dev/zero of="$IMG_FILE" bs=1M count=3500 conv=fsync status=none
 
 parted "$IMG_FILE" --script mklabel msdos
-parted "$IMG_FILE" --script mkpart primary fat32 1MiB 34MiB
-parted "$IMG_FILE" --script mkpart primary ext4 34MiB 100%
+parted "$IMG_FILE" --script mkpart primary fat32 1MiB 65MiB
+parted "$IMG_FILE" --script mkpart primary ext4 65MiB 100%
 
 LOOP_DEV=$(losetup -fP --show "$IMG_FILE")
 trap cleanup EXIT
@@ -44,10 +44,9 @@ if [ -d "$BASE_DIR/config/boot" ]; then
 	rm -f "$MNT_BOOT/.keep"
 fi
 
-# Move the package-staged boot artifacts onto the boot partition
-mkdir -p "$MNT_BOOT/script"
-cp "$MNT_ROOTFS"/boot/uboot/script/* "$MNT_BOOT/script/"
-rm -rf "$MNT_ROOTFS"/boot/uboot/script
+# Move the package-staged boot slot(s) onto the boot partition
+cp -r "$MNT_ROOTFS"/boot/uboot/. "$MNT_BOOT/"
+rm -rf "$MNT_ROOTFS"/boot/uboot/*
 
 log INFO "Unmounting and zeroing free space"
 sync

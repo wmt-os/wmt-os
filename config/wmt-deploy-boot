@@ -1,6 +1,0 @@
-#!/bin/sh
-# Sync the boot artifacts to the FAT partition
-set -e
-mkdir -p /boot/uboot/script
-cp -f /usr/lib/wmt/boot/* /boot/uboot/script/
-sync

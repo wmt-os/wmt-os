@@ -19,8 +19,11 @@ export KERNEL_VERSION_PATTERN='^6\.12\.'
 export BUILDER_NAME="WMT Automation"
 export BUILDER_EMAIL="auto@wmt.os"
 
-# Stable APT package name
-export PACKAGE_NAME="linux-image-wm8505"
+# Kernel flavour (CONFIG_LOCALVERSION="-$KERNEL_FLAVOUR"): each build is a distinct
+# versioned package linux-image-<release> (release ends in -$KERNEL_FLAVOUR-g<commit>),
+# tracked by the stable-named metapackage $PACKAGE_NAME that the image installs.
+export KERNEL_FLAVOUR="wm8505"
+export PACKAGE_NAME="linux-image-$KERNEL_FLAVOUR"
 
 export DEBIAN_CONFIG_POOL="https://ftp.debian.org/debian/pool/main/l/linux/"
 export DEBIAN_CONFIG_PATTERN="linux-config-6.12_.*_armel\.deb$"

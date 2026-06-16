@@ -1,79 +1,83 @@
 #!/bin/bash
-# REQUIRES: bc bison build-essential dpkg-dev flex gcc-arm-linux-gnueabi libssl-dev u-boot-tools
+# REQUIRES: bc bison build-essential debhelper dpkg-dev fakeroot flex gcc-arm-linux-gnueabi kmod libssl-dev rsync
 set -e
 source "$(dirname "$0")/common.sh"
 
 cd "$KERNEL_DIR"
 
-KERNEL_RELEASE=$(make -s kernelrelease)   # uname -r; pairs the deb with its modules
-# One timestamp: human for the splash, digits for the version
-BUILD_TIME=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
-BUILD_STAMP=${BUILD_TIME//[!0-9]/}
-PACKAGE_VERSION="$(make -s kernelversion)-wmt-$BUILD_STAMP"
-DEB_FILE="$BUILD_DIR/debs/${PACKAGE_NAME}_${PACKAGE_VERSION}_armel.deb"
+RELEASE=$(make -s kernelrelease)              # uname -r, e.g. 6.12.93-wm8505
+KERNEL_PKG="linux-image-$RELEASE"             # versioned kernel package name
+# One UTC timestamp gives a monotonic deb revision; an upstream bump dominates it
+BUILD_STAMP=$(date -u +%Y%m%d%H%M%S)
+PKG_VERSION="$(make -s kernelversion)-$BUILD_STAMP"
 
-log INFO "Packaging $PACKAGE_NAME $PACKAGE_VERSION ($KERNEL_RELEASE)"
+export DEBFULLNAME="$BUILDER_NAME" DEBEMAIL="$BUILDER_EMAIL"
 
+DEBS="$BUILD_DIR/debs"
+mkdir -p "$DEBS"
+rm -f "$DEBS"/*.deb "$DEBS"/Packages.gz       # the local repo holds only this build
+
+log INFO "Building $KERNEL_PKG ($PKG_VERSION) with bindeb-pkg"
+# Objects are already built by the `kernel`/`modules` targets, so package
+# serially: parallel dtbs_install races on `install -d` (notably under uutils).
+# DPKG_FLAGS=-d: skip dpkg's target-arch build-dep check — we cross-compile with
+# the host's native toolchain (the recipe only auto-skips it on native builds).
+make bindeb-pkg KBUILD_DEBARCH=armel KDEB_PKGVERSION="$PKG_VERSION" KDEB_COMPRESS=xz DPKG_FLAGS=-d
+# Keep only the image deb; bindeb-pkg also drops headers/libc-dev/changes/buildinfo
+# beside it in the parent dir, which we discard.
+mv "$BASE_DIR/${KERNEL_PKG}_${PKG_VERSION}_"*.deb "$DEBS/"
+rm -f "$BASE_DIR"/linux-headers-*.deb "$BASE_DIR"/linux-libc-dev_*.deb \
+	"$BASE_DIR"/linux-upstream_*.buildinfo "$BASE_DIR"/linux-upstream_*.changes
+
+log INFO "Building wmt-boot"
 staging=$(mktemp -d)
-trap 'rm -rf "$staging"' EXIT
+install -Dm755 "$BASE_DIR/config/wmt-boot/deploy" "$staging/usr/sbin/wmt-deploy-boot"
+install -Dm755 "$BASE_DIR/config/wmt-boot/kernel-postinst" "$staging/etc/kernel/postinst.d/zz-wmt-boot"
+install -Dm755 "$BASE_DIR/config/wmt-boot/kernel-postrm" "$staging/etc/kernel/postrm.d/zz-wmt-boot"
+install -Dm644 "$BASE_DIR/config/wmt-boot/uboot.cmd" "$staging/usr/share/wmt-boot/uboot.cmd"
+mkdir -p "$staging/DEBIAN"
+cat > "$staging/DEBIAN/control" <<EOF
+Package: wmt-boot
+Version: $PKG_VERSION
+Architecture: all
+Maintainer: $BUILDER_NAME <$BUILDER_EMAIL>
+Section: kernel
+Priority: optional
+Depends: u-boot-tools
+Description: WM8505 U-Boot boot integration
+ Builds the U-Boot boot slot (uzImage.bin + scriptcmd) from an installed kernel
+ and keeps the previous one as a rollback slot, via /etc/kernel hooks.
+EOF
+cat > "$staging/DEBIAN/postinst" <<'EOF'
+#!/bin/sh
+set -e
+[ "$1" = configure ] || exit 0
+/usr/sbin/wmt-deploy-boot   # deploy the newest installed kernel
+EOF
+chmod 755 "$staging/DEBIAN/postinst"
+dpkg-deb --root-owner-group --build "$staging" "$DEBS/wmt-boot_${PKG_VERSION}_all.deb" >/dev/null
+rm -rf "$staging"
 
-# Ship the deploy hook that the postinst runs
-install -Dm755 "$BASE_DIR/config/wmt-deploy-boot" "$staging/usr/sbin/wmt-deploy-boot"
-
-log INFO "Building boot artifacts"
-install -d "$staging/usr/lib/wmt/boot"
-tmp=$(mktemp)
-# uzImage.bin: zImage with the DTB appended, wrapped as a U-Boot kernel image
-cat arch/arm/boot/zImage arch/arm/boot/dts/vt8500/wm8505-ref.dtb > "$tmp"
-mkimage -A arm -O linux -T kernel -C none -a 0x8000 -e 0x8000 -n linux \
-	-d "$tmp" "$staging/usr/lib/wmt/boot/uzImage.bin" >/dev/null
-# scriptcmd: uboot.cmd with KERNEL_RELEASE/BUILD_TIME prepended, wrapped as a U-Boot script
-sed "1i setenv KERNEL_RELEASE $KERNEL_RELEASE\nsetenv BUILD_TIME $BUILD_TIME" "$BASE_DIR/config/uboot.cmd" > "$tmp"
-mkimage -A arm -O linux -T script -C none -a 1 -e 0 -n "script image" \
-	-d "$tmp" "$staging/usr/lib/wmt/boot/scriptcmd" >/dev/null
-rm -f "$tmp"
-
-log INFO "Installing stripped modules"
-make -s INSTALL_MOD_PATH="$staging" INSTALL_MOD_STRIP=1 modules_install
-# Drop the build/source symlinks; they point into the build tree and dangle on-device
-rm -f "$staging/lib/modules/$KERNEL_RELEASE/build" "$staging/lib/modules/$KERNEL_RELEASE/source"
-
-# Package metadata and maintainer scripts (postinst/postrm run on-device)
+log INFO "Building $PACKAGE_NAME metapackage"
+staging=$(mktemp -d)
 mkdir -p "$staging/DEBIAN"
 cat > "$staging/DEBIAN/control" <<EOF
 Package: $PACKAGE_NAME
-Version: $PACKAGE_VERSION
+Version: $PKG_VERSION
 Architecture: armel
 Maintainer: $BUILDER_NAME <$BUILDER_EMAIL>
 Section: kernel
 Priority: optional
-Installed-Size: $(du -ks "$staging" | cut -f1)
-Description: Linux kernel for WonderMedia WM8505
- Kernel $KERNEL_RELEASE for the WonderMedia WM8505 SoC.
+Depends: $KERNEL_PKG (= $PKG_VERSION), wmt-boot
+Description: Linux kernel for the WonderMedia WM8505 (metapackage)
+ Tracks the latest $KERNEL_PKG and pulls in the boot integration. Each kernel is a
+ distinct co-installable package; upgrading pulls the new one while apt keeps the
+ previous one as a rollback target.
 EOF
-
-cat > "$staging/DEBIAN/postinst" <<EOF
-#!/bin/sh
-set -e
-[ "\$1" = configure ] || exit 0
-depmod -a "$KERNEL_RELEASE"
-/usr/sbin/wmt-deploy-boot
-EOF
-
-cat > "$staging/DEBIAN/postrm" <<EOF
-#!/bin/sh
-set -e
-case "\$1" in
-	remove|purge) rm -rf "/lib/modules/$KERNEL_RELEASE" ;;
-esac
-EOF
-chmod 755 "$staging/DEBIAN/postinst" "$staging/DEBIAN/postrm"
-
-mkdir -p "$BUILD_DIR/debs"
-dpkg-deb --root-owner-group --build "$staging" "$DEB_FILE" >/dev/null
-log OK "Built $(basename "$DEB_FILE")"
+dpkg-deb --root-owner-group --build "$staging" "$DEBS/${PACKAGE_NAME}_${PKG_VERSION}_armel.deb" >/dev/null
+rm -rf "$staging"
 
 log INFO "Indexing local repository"
-cd "$BUILD_DIR/debs"
+cd "$DEBS"
 dpkg-scanpackages --multiversion . /dev/null | gzip -9c > Packages.gz
-log OK "Local repository ready at $BUILD_DIR/debs"
+log OK "Local repository ready at $DEBS"

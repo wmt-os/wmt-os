@@ -59,8 +59,8 @@ FORCE:
 
 # ---- Debian package ----
 
-deb: build/debs/Packages.gz  ## Build the kernel package and local APT index
-build/debs/Packages.gz: linux-wmt/arch/arm/boot/zImage linux-wmt/modules.order config/wmt-deploy-boot config/uboot.cmd
+deb: build/debs/Packages.gz  ## Build the kernel + metapackage + boot glue and local APT index
+build/debs/Packages.gz: linux-wmt/arch/arm/boot/zImage linux-wmt/modules.order $(wildcard config/wmt-boot/*)
 	@scripts/build-deb.sh
 
 # ---- Image ----

@@ -1,0 +1,3 @@
+#!/bin/sh
+# Kernel installed/upgraded ($1 = version): deploy it as the active boot slot
+exec /usr/sbin/wmt-deploy-boot "$1"

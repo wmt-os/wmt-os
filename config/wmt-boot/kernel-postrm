@@ -1,0 +1,5 @@
+#!/bin/sh
+# Kernel removed (not an in-place upgrade): re-point the slot at the newest one left
+case " $DEB_MAINT_PARAMS " in
+	*" remove "*|*" purge "*) exec /usr/sbin/wmt-deploy-boot ;;
+esac

@@ -1,0 +1,60 @@
+#!/bin/sh
+# Build the WM8505 U-Boot boot slot for a kernel and rotate the previous slot
+# into the rollback slot. Invoked by the /etc/kernel hooks and on wmt-boot
+# install. Arg 1: kernel version (default: newest installed image).
+set -e
+
+boot=/boot/uboot
+template=/usr/share/wmt-boot/uboot.cmd
+
+# On a booted device the FAT must be mounted here; in the mmdebstrap chroot it is
+# a plain dir (no systemd) that mk-image later copies onto the real FAT, so the
+# check is skipped there. Guards against silently writing to the rootfs underlay
+# when a nofail FAT fails to mount on-device.
+if [ -d /run/systemd/system ] && ! mountpoint -q "$boot"; then
+	echo "wmt-deploy-boot: $boot is not mounted; refusing to write the boot slot" >&2
+	exit 1
+fi
+
+# Defer if mkimage is not ready yet (u-boot-tools unpacked but unconfigured during
+# bootstrap); wmt-boot's postinst redeploys once it is.
+command -v mkimage >/dev/null 2>&1 || exit 0
+
+# Target kernel: the one passed in, else the newest installed image (by build time)
+version=${1:-$(ls -t /boot/vmlinuz-* 2>/dev/null | head -n1 | sed 's#.*/vmlinuz-##')}
+image="/boot/vmlinuz-$version"
+[ -n "$version" ] && [ -f "$image" ] || exit 0
+
+dtb=$(find "/usr/lib/linux-image-$version" -name 'wm8505-ref.dtb' 2>/dev/null | head -n1)
+[ -n "$dtb" ] || exit 0
+
+# Stage the new slot on the FAT so the final swap is an in-filesystem rename
+new="$boot/.script.new"
+rm -rf "$new"
+mkdir -p "$new"
+tmp=$(mktemp)
+trap 'rm -f "$tmp"' EXIT
+# uzImage.bin: zImage with its DTB appended, wrapped as a U-Boot kernel image
+cat "$image" "$dtb" > "$tmp"
+mkimage -A arm -O linux -T kernel -C none -a 0x8000 -e 0x8000 -n linux \
+	-d "$tmp" "$new/uzImage.bin" >/dev/null
+# scriptcmd: the splash template with this kernel's release + build date prepended
+build_time=$(date -ur "$image" +"%Y-%m-%d %H:%M:%S UTC")
+sed "1i setenv KERNEL_RELEASE $version\nsetenv BUILD_TIME $build_time" "$template" > "$tmp"
+mkimage -A arm -O linux -T script -C none -a 1 -e 0 -n "script image" \
+	-d "$tmp" "$new/scriptcmd" >/dev/null
+printf '%s\n' "$version" > "$new/version"
+sync
+
+# Demote the active slot to the rollback slot only when it holds a DIFFERENT and
+# still-installed kernel, so a same-kernel redeploy or removal of the active kernel
+# never clobbers a good rollback. Then swap the new slot in.
+active=$(cat "$boot/script/version" 2>/dev/null || true)
+if [ -d "$boot/script" ] && [ "$active" != "$version" ] && [ -f "/boot/vmlinuz-$active" ]; then
+	rm -rf "$boot/script.bak"
+	mv "$boot/script" "$boot/script.bak"
+else
+	rm -rf "$boot/script"
+fi
+mv "$new" "$boot/script"
+sync
