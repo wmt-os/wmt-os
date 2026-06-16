@@ -11,6 +11,8 @@ KMAKE := source scripts/common.sh && $(MAKE) -C linux-wmt -j$(NPROC)
 
 # Rebuild the rootfs when its config (common.sh), overlay, sources, or hooks change
 ROOTFS_DEPS := scripts/common.sh config/rootfs-hooks.sh $(shell find config/overlay config/sources -type f)
+# Rebuild the image when the FAT boot-partition files change (they bypass the rootfs)
+BOOT_DEPS := $(shell find config/boot -type f)
 
 .DEFAULT_GOAL := help
 .NOTPARALLEL:
@@ -71,7 +73,7 @@ build/.rootfs-$(PROFILE)-stamp: build/debs/Packages.gz $(ROOTFS_DEPS)
 	@touch build/.rootfs-$(PROFILE)-stamp
 
 image: build/disk-$(PROFILE).img.gz  ## Build the disk image
-build/disk-$(PROFILE).img.gz: build/.rootfs-$(PROFILE)-stamp
+build/disk-$(PROFILE).img.gz: build/.rootfs-$(PROFILE)-stamp $(BOOT_DEPS)
 	@sudo PROFILE=$(PROFILE) scripts/mk-image.sh
 
 standard:  ## Build the standard (default) disk image
