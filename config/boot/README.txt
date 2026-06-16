@@ -1,16 +1,22 @@
-WMT OS Setup
-============
+WMT OS
+======
 
-WMT OS needs a few settings before its first boot -- a hostname, timezone,
-username, and account passwords. There are two ways to provide them.
+FIRST-TIME SETUP
 
-On Windows or Windows CE:
-  Run run-setup.cmd (double-clicking it usually works). Fill in the form and
-  click Save, and it writes setup.ini straight to the card for you.
+WMT OS needs a hostname, timezone, username, and account passwords before its
+first boot.
 
-Otherwise:
-  Open wmt-os-setup.html in just about any web browser. Fill in the form and
-  click Save to download setup.ini, then copy it to the card's boot partition
-  root, next to this file.
+  Windows or Windows CE:  run setup.cmd, fill in the form, and click Save -- it
+  writes setup.ini to the card for you.
+
+  Other systems:  open wmt-os-setup.html in any web browser, fill in the form,
+  and click Save, then copy the downloaded setup.ini next to this file.
 
 Boot the device and WMT OS takes it from there.
+
+ROLL BACK A KERNEL
+
+If a kernel update ever misbehaves, you can boot the previous kernel again. Put
+the card in a Windows or Windows CE machine and run rollback.cmd -- it shows the
+current and previous kernels and switches between them. Reboot to apply; run it
+again to switch back.
