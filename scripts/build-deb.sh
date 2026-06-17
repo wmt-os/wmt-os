@@ -10,8 +10,8 @@ KERNEL_PKG="linux-image-$RELEASE"             # versioned (per-commit) kernel pa
 UPSTREAM=$(make -s kernelversion)             # e.g. 6.12.93
 KCOMMIT=$(git rev-parse --short=12 HEAD 2>/dev/null || echo 0)
 
-# Each package embeds a content id in its version so the publish step (publish-deb.sh) can
-# ship only real changes: the kernel a hash of its whole .config (deterministic across runs
+# Each package embeds a content id in its version so the publish step can ship only real
+# changes: the kernel a hash of its whole .config (deterministic across runs
 # on a stable host) plus the cross flags .config doesn't record, the metapackage the kernel
 # commit it tracks, wmt-boot a hash of its shipped files. A toolchain bump shifts the .config
 # hash, which is correct -- the emitted binary differs. A UTC timestamp supplies the monotonic

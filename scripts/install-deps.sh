@@ -2,10 +2,8 @@
 set -e
 source "$(dirname "$0")/common.sh"
 
-SCRIPT_DIR="$(dirname "$0")"
-
 mapfile -t ALL_REQUIRED < <(
-    awk '/^# REQUIRES:/ {for (i=3; i<=NF; i++) print $i}' "$SCRIPT_DIR"/*.sh | sort -u
+    awk '/^# REQUIRES:/ {for (i=3; i<=NF; i++) print $i}' "$(dirname "$0")"/*.sh | sort -u
 )
 
 mapfile -t missing_packages < <(
