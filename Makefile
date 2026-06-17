@@ -6,17 +6,17 @@ SHELL := /bin/bash
 NPROC := $(shell nproc)
 PROFILE ?= standard
 
-# Source common.sh so the kernel build inherits ARCH, CROSS_COMPILE, and KCFLAGS
-KMAKE := source scripts/common.sh && $(MAKE) -C linux-wmt -j$(NPROC)
+# Source ./config so the kernel build inherits ARCH, CROSS_COMPILE, and KCFLAGS
+KMAKE := source ./config && $(MAKE) -C linux-wmt -j$(NPROC)
 
-# Rebuild the rootfs when its config (common.sh), overlay, sources, or hooks change
-ROOTFS_DEPS := scripts/common.sh config/rootfs-hooks.sh $(shell find config/overlay config/sources -type f)
-# Rebuild the image when the FAT boot-partition files change (they bypass the rootfs)
-BOOT_DEPS := $(shell find config/boot -type f)
+# Rebuild the rootfs when the settings, overlay, sources, or hooks change
+ROOTFS_DEPS := config bootstrap/hooks.sh $(shell find overlays/rootfs bootstrap/sources -type f)
+# Rebuild the image when the boot overlay changes (it bypasses the rootfs)
+BOOT_DEPS := $(shell find overlays/boot -type f)
 
 .DEFAULT_GOAL := help
 .NOTPARALLEL:
-.PHONY: help all deps repo sync reset rebase config kernel modules deb rootfs standard desktop image clean distclean
+.PHONY: help all deps repo sync reset rebase kconfig kernel modules deb rootfs standard desktop image clean distclean
 
 help:  ## Show this help text
 	@awk -F':.*## ' '/^[a-z][a-z-]*:.*##/ {printf "  \033[36m%-9s\033[0m  %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -45,9 +45,9 @@ rebase: reset  ## Rebase onto the latest upstream kernel (discards local changes
 
 # ---- Kernel ----
 
-config: linux-wmt/.config  ## Generate the kernel config from the seed
-linux-wmt/.config: config/kernel-seed.config | linux-wmt/.git
-	@scripts/mk-config.sh
+kconfig: linux-wmt/.config  ## Generate the kernel config from the seed
+linux-wmt/.config: kernel-seed.config | linux-wmt/.git
+	@scripts/mk-kconfig.sh
 
 linux-wmt/arch/arm/boot/zImage: linux-wmt/.config FORCE
 	$(KMAKE) zImage dtbs
@@ -62,8 +62,8 @@ FORCE:
 # ---- Debian package ----
 
 deb: build/debs/Packages.gz  ## Build the kernel + metapackage + boot glue and local APT index
-build/debs/Packages.gz: linux-wmt/arch/arm/boot/zImage linux-wmt/modules.order $(wildcard config/wmt-boot/*)
-	@scripts/build-deb.sh
+build/debs/Packages.gz: linux-wmt/arch/arm/boot/zImage linux-wmt/modules.order $(wildcard packages/wmt-boot/*)
+	@scripts/mk-deb.sh
 
 # ---- Image ----
 

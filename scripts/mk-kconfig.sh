@@ -1,7 +1,8 @@
 #!/bin/bash
 # REQUIRES: bison build-essential flex gcc-arm-linux-gnueabi lynx wget
-set -e
-source "$(dirname "$0")/common.sh"
+set -eu
+. "$(dirname "$0")/lib.sh"
+. "$BASE_DIR/config"
 
 log INFO "Generating kernel config"
 
@@ -17,12 +18,12 @@ ar p "$tmp/config.deb" data.tar.xz | tar -xOJf - "$DEBIAN_CONFIG_FILE" | unxz > 
 log INFO "Merging config"
 cd "$KERNEL_DIR"
 # Resolve the seed on its own and snapshot the resulting enabled options
-cp "$BASE_DIR/config/kernel-seed.config" .config
+cp "$BASE_DIR/kernel-seed.config" .config
 make olddefconfig
 grep -E '=(y|m)$' .config > "$tmp/seed.defconfig"
 
 # Merge the Debian base under the seed, re-assert the snapshot, then finalize
-scripts/kconfig/merge_config.sh -m "$tmp/config.debian" "$BASE_DIR/config/kernel-seed.config"
+scripts/kconfig/merge_config.sh -m "$tmp/config.debian" "$BASE_DIR/kernel-seed.config"
 scripts/kconfig/merge_config.sh -m .config "$tmp/seed.defconfig"
 make olddefconfig
 

@@ -1,16 +1,11 @@
-#!/bin/bash
-set -e
-set -u
-
-export BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-export KERNEL_DIR="$BASE_DIR/linux-wmt"
-export BUILD_DIR="$BASE_DIR/build"
+# WMT OS build settings -- pure data, sourced by the scripts (after scripts/lib.sh) and
+# the Makefile. Edit this for your host. Mirrors wmt-os-automation/config.
 
 export ARCH="arm"
 export CROSS_COMPILE="arm-linux-gnueabi-"
 export KCFLAGS="-march=armv5te -mtune=arm926ej-s"
 
-export KERNEL_BRANCH="wmt-dev"
+export KERNEL_BRANCH="wmt-dev"          # the branch the build tracks; flips to wmt-6.12.y for production
 export KERNEL_REPO="https://github.com/lrussell887/linux-wmt.git"
 export KERNEL_UPSTREAM_RELEASES="https://www.kernel.org/releases.json"
 export KERNEL_UPSTREAM_REPO="https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git"
@@ -35,14 +30,3 @@ export DEBIAN_DESKTOP_PACKAGES="xserver-xorg-core xserver-xorg-input-libinput xi
 
 # Image profile: standard | desktop
 export PROFILE="${PROFILE:-standard}"
-
-log() {
-	local level=$1
-	shift
-	case $level in
-		OK) echo "$(tput setaf 2)[OK]$(tput sgr0) $*" ;;
-		INFO) echo "$(tput setaf 6)[INFO]$(tput sgr0) $*" ;;
-		WARN) echo "$(tput setaf 3)[WARN]$(tput sgr0) $*" ;;
-		ERROR) echo "$(tput setaf 1)[ERROR]$(tput sgr0) $*" ;;
-	esac
-}

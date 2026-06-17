@@ -1,6 +1,7 @@
 #!/bin/bash
-set -e
-source "$(dirname "$0")/common.sh"
+set -eu
+. "$(dirname "$0")/lib.sh"
+. "$BASE_DIR/config"
 
 mapfile -t ALL_REQUIRED < <(
     awk '/^# REQUIRES:/ {for (i=3; i<=NF; i++) print $i}' "$(dirname "$0")"/*.sh | sort -u

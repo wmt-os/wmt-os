@@ -1,7 +1,8 @@
 #!/bin/bash
 # REQUIRES: bc bison build-essential debhelper dpkg-dev fakeroot flex gcc-arm-linux-gnueabi kmod libssl-dev rsync
-set -e
-source "$(dirname "$0")/common.sh"
+set -eu
+. "$(dirname "$0")/lib.sh"
+. "$BASE_DIR/config"
 
 cd "$KERNEL_DIR"
 
@@ -17,7 +18,7 @@ KCOMMIT=$(git rev-parse --short=12 HEAD 2>/dev/null || echo 0)
 # hash, which is correct -- the emitted binary differs. A UTC timestamp supplies the monotonic
 # revision; an upstream bump naturally dominates it.
 CONFIGHASH=$({ cat .config; printf '%s\n' "$ARCH" "$CROSS_COMPILE" "$KCFLAGS"; } | sha256sum | cut -c1-12)
-WMTBOOT_HASH=$(cat "$BASE_DIR"/config/wmt-boot/* | sha256sum | cut -c1-12)
+WMTBOOT_HASH=$(cat "$BASE_DIR"/packages/wmt-boot/* | sha256sum | cut -c1-12)
 STAMP=$(date -u +%Y%m%d%H%M%S)
 
 KERNEL_VERSION="$UPSTREAM-$STAMP+c$CONFIGHASH"
@@ -41,12 +42,12 @@ rm -f "$BASE_DIR"/linux-headers-*.deb "$BASE_DIR"/linux-libc-dev_*.deb \
 
 log INFO "Building wmt-boot ($WMTBOOT_VERSION)"
 staging=$(mktemp -d)
-install -Dm755 "$BASE_DIR/config/wmt-boot/deploy" "$staging/usr/sbin/wmt-deploy-boot"
-install -Dm755 "$BASE_DIR/config/wmt-boot/kernel-postinst" "$staging/etc/kernel/postinst.d/zz-wmt-boot"
-install -Dm755 "$BASE_DIR/config/wmt-boot/kernel-postrm" "$staging/etc/kernel/postrm.d/zz-wmt-boot"
-install -Dm644 "$BASE_DIR/config/wmt-boot/uboot.cmd" "$staging/usr/share/wmt-boot/uboot.cmd"
-install -Dm755 "$BASE_DIR/config/wmt-boot/postinst" "$staging/DEBIAN/postinst"
-install -Dm644 "$BASE_DIR/config/wmt-boot/triggers" "$staging/DEBIAN/triggers"
+install -Dm755 "$BASE_DIR/packages/wmt-boot/deploy" "$staging/usr/sbin/wmt-deploy-boot"
+install -Dm755 "$BASE_DIR/packages/wmt-boot/kernel-postinst" "$staging/etc/kernel/postinst.d/zz-wmt-boot"
+install -Dm755 "$BASE_DIR/packages/wmt-boot/kernel-postrm" "$staging/etc/kernel/postrm.d/zz-wmt-boot"
+install -Dm644 "$BASE_DIR/packages/wmt-boot/uboot.cmd" "$staging/usr/share/wmt-boot/uboot.cmd"
+install -Dm755 "$BASE_DIR/packages/wmt-boot/postinst" "$staging/DEBIAN/postinst"
+install -Dm644 "$BASE_DIR/packages/wmt-boot/triggers" "$staging/DEBIAN/triggers"
 cat > "$staging/DEBIAN/control" <<EOF
 Package: wmt-boot
 Version: $WMTBOOT_VERSION

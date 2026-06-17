@@ -1,7 +1,8 @@
 #!/bin/bash
 # REQUIRES: dosfstools e2fsprogs parted pigz pv zerofree
-set -e
-source "$(dirname "$0")/common.sh"
+set -eu
+. "$(dirname "$0")/lib.sh"
+. "$BASE_DIR/config"
 
 IMG_FILE="$BUILD_DIR/disk.img"
 IMG_GZ="$BUILD_DIR/disk-$PROFILE.img.gz"
@@ -39,8 +40,8 @@ log INFO "Populating filesystems"
 cp -a "$BUILD_DIR"/rootfs/. "$MNT_ROOTFS/"
 
 # Static boot-partition files (setup, etc.)
-if [ -d "$BASE_DIR/config/boot" ]; then
-	cp -r "$BASE_DIR"/config/boot/. "$MNT_BOOT/"
+if [ -d "$BASE_DIR/overlays/boot" ]; then
+	cp -r "$BASE_DIR"/overlays/boot/. "$MNT_BOOT/"
 	rm -f "$MNT_BOOT/.keep"
 fi
 

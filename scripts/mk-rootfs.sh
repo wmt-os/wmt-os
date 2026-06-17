@@ -1,7 +1,8 @@
 #!/bin/bash
 # REQUIRES: binfmt-support debian-archive-keyring mmdebstrap qemu-user-binfmt
-set -e
-source "$(dirname "$0")/common.sh"
+set -eu
+. "$(dirname "$0")/lib.sh"
+. "$BASE_DIR/config"
 
 log INFO "Bootstrapping rootfs ($PROFILE)"
 
@@ -13,15 +14,15 @@ PACKAGES="$DEBIAN_EXTRA_PACKAGES $PACKAGE_NAME"
 
 cd "$BASE_DIR"
 
-# Install from the local repo; ship config/sources, drop the bootstrap list
+# Install from the local repo; ship bootstrap/sources, drop the bootstrap list
 mmdebstrap \
 	--variant=standard \
 	--include="${PACKAGES// /,}" \
 	--architectures=armel \
 	--components="$DEBIAN_COMPONENTS" \
-	--setup-hook='cp -r config/overlay/. "$1"/' \
-	--customize-hook='chroot "$1" /bin/sh < config/rootfs-hooks.sh' \
-	--customize-hook='rm -f "$1"/etc/apt/sources.list; cp -r config/sources/. "$1"/etc/apt/' \
+	--setup-hook='cp -r overlays/rootfs/. "$1"/' \
+	--customize-hook='chroot "$1" /bin/sh < bootstrap/hooks.sh' \
+	--customize-hook='rm -f "$1"/etc/apt/sources.list; cp -r bootstrap/sources/. "$1"/etc/apt/' \
 	trixie \
 	"$ROOTFS_DIR" \
 	"deb [trusted=yes] copy://$BUILD_DIR/debs ./" \
