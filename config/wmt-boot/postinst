@@ -1,0 +1,19 @@
+#!/bin/sh
+set -e
+case "$1" in
+configure)
+	# Bootstrap / apply a wmt-boot change. Activate (don't deploy) so this dedups with
+	# the kernel hook when both are upgraded in one transaction.
+	dpkg-trigger --no-await wmt-deploy-boot
+	;;
+triggered)
+	# Runs once per dpkg run. A kernel landed (flag) -> deploy the newest and rotate;
+	# otherwise refresh the active slot, preserving any manual rollback.
+	if [ -e /run/wmt-boot.deploy-newest ]; then
+		rm -f /run/wmt-boot.deploy-newest
+		/usr/sbin/wmt-deploy-boot
+	else
+		/usr/sbin/wmt-deploy-boot "$(cat /boot/uboot/script/version 2>/dev/null)"
+	fi
+	;;
+esac
