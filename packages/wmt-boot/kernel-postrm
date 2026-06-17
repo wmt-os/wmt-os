@@ -7,8 +7,7 @@ boot=/boot/uboot
 if [ "$1" = "$(cat "$boot/script.bak/version" 2>/dev/null)" ]; then
 	rm -rf "$boot/script.bak"; sync
 fi
-# If the active kernel was removed, request one redeploy of the newest remaining
-# (via the same trigger, so an install+removal in one run still deploys once).
+# If the active kernel was removed, redeploy the newest remaining (coalesced via the trigger).
 if [ "$1" = "$(cat "$boot/script/version" 2>/dev/null)" ]; then
 	[ -d /run ] && : > /run/wmt-boot.deploy-newest
 	dpkg-trigger --no-await wmt-deploy-boot

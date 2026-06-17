@@ -6,12 +6,11 @@ SHELL := /bin/bash
 NPROC := $(shell nproc)
 PROFILE ?= standard
 
-# Source ./config so the kernel build inherits ARCH, CROSS_COMPILE, and KCFLAGS
+# Source ./config so the kernel build inherits ARCH/CROSS_COMPILE/KCFLAGS
 KMAKE := source ./config && $(MAKE) -C linux-wmt -j$(NPROC)
 
-# Rebuild the rootfs when the settings, overlay, sources, or hooks change
 ROOTFS_DEPS := config bootstrap/hooks.sh $(shell find overlays/rootfs bootstrap/sources -type f)
-# Rebuild the image when the boot overlay changes (it bypasses the rootfs)
+# Boot overlay bypasses the rootfs, so the image must depend on it directly
 BOOT_DEPS := $(shell find overlays/boot -type f)
 
 .DEFAULT_GOAL := help

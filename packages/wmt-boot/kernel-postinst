@@ -1,7 +1,4 @@
 #!/bin/sh
-# Kernel installed/upgraded: request a boot-slot deploy. dpkg coalesces the trigger, so
-# several kernel hooks plus wmt-boot's own postinst in one transaction still deploy once
-# (at end of run). The flag tells wmt-boot to rotate to the newest installed kernel,
-# rather than just refreshing the active slot (which a wmt-boot-only change does).
+# Kernel installed/upgraded: flag a rotate-to-newest, then request the (coalesced) deploy trigger.
 [ -d /run ] && : > /run/wmt-boot.deploy-newest
 dpkg-trigger --no-await wmt-deploy-boot

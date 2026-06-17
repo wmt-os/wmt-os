@@ -1,13 +1,12 @@
 #!/bin/sh
-# Build the WM8505 boot slot (uzImage.bin + scriptcmd) for a kernel and rotate the
-# previous slot to the rollback slot. Arg 1: version (default: newest installed).
+# Build a kernel's boot slot (uzImage.bin + scriptcmd) and rotate the old slot to rollback.
+# Arg 1: version (default: newest installed).
 set -e
 
 boot=/boot/uboot
 template=/usr/share/wmt-boot/uboot.cmd
 
-# On a booted device the FAT must be mounted; in the build chroot it's a plain dir
-# (no systemd), so skip the check there rather than write to the rootfs underlay.
+# Skip the mount check in the build chroot (no systemd); on a device the FAT must be mounted.
 if [ -d /run/systemd/system ] && ! mountpoint -q "$boot"; then
 	echo "wmt-deploy-boot: $boot is not mounted; refusing to write the boot slot" >&2
 	exit 1
@@ -16,7 +15,6 @@ fi
 # Defer if mkimage isn't ready (bootstrap ordering); wmt-boot's postinst redeploys.
 command -v mkimage >/dev/null 2>&1 || exit 0
 
-# Target kernel: the one passed in, else the newest installed image (by build time)
 version=${1:-$(ls -t /boot/vmlinuz-* 2>/dev/null | head -n1 | sed 's#.*/vmlinuz-##')}
 image="/boot/vmlinuz-$version"
 [ -n "$version" ] && [ -f "$image" ] || exit 0
@@ -24,9 +22,7 @@ image="/boot/vmlinuz-$version"
 dtb=$(find "/usr/lib/linux-image-$version" -name 'wm8505-ref.dtb' 2>/dev/null | head -n1)
 [ -n "$dtb" ] || exit 0
 
-# Stage the new slot on the FAT itself, not in /tmp: on this RAM-starved device
-# /tmp is a small tmpfs, and a kernel deploy must not depend on it having room.
-# Staging at the destination also keeps the final swap an in-filesystem rename.
+# Stage on the FAT, not /tmp: keeps the final swap an in-filesystem rename, and /tmp is a tiny tmpfs.
 new="$boot/.script.new"
 rm -rf "$new"
 mkdir -p "$new"
@@ -34,7 +30,6 @@ mkdir -p "$new"
 cat "$image" "$dtb" > "$new/.payload"
 mkimage -A arm -O linux -T kernel -C none -a 0x8000 -e 0x8000 -n linux \
 	-d "$new/.payload" "$new/uzImage.bin" >/dev/null
-# scriptcmd: the splash template with this kernel's release + build date prepended
 build_time=$(date -ur "$image" +"%Y-%m-%d %H:%M:%S UTC")
 sed "1i setenv KERNEL_RELEASE $version\nsetenv BUILD_TIME $build_time" "$template" > "$new/.payload"
 mkimage -A arm -O linux -T script -C none -a 1 -e 0 -n "script image" \
@@ -43,8 +38,7 @@ rm -f "$new/.payload"
 printf '%s\n' "$version" > "$new/version"
 sync
 
-# Demote the active slot to rollback only if it holds a different, still-installed
-# kernel, so a redeploy or active-kernel removal can't clobber a good rollback.
+# Demote the active slot to rollback only if it holds a different, still-installed kernel.
 active=$(cat "$boot/script/version" 2>/dev/null || true)
 if [ -d "$boot/script" ] && [ "$active" != "$version" ] && [ -f "/boot/vmlinuz-$active" ]; then
 	rm -rf "$boot/script.bak"

@@ -1,5 +1,5 @@
 @echo off
-REM WMT OS kernel rollback -- swap the active (script) and backup (script.bak) boot slots
+REM script is the active boot slot, script.bak the backup; swap them
 cd %0\..
 cls
 echo  WMT OS  --  Kernel Rollback

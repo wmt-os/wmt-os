@@ -6,14 +6,16 @@ set -eu
 
 IMG_FILE="$BUILD_DIR/disk.img"
 IMG_GZ="$BUILD_DIR/disk-$PROFILE.img.gz"
-MNT_BOOT="$BUILD_DIR/mnt/boot"
-MNT_ROOTFS="$BUILD_DIR/mnt/rootfs"
+MNT=$(mktemp -d)
+MNT_BOOT="$MNT/boot"
+MNT_ROOTFS="$MNT/rootfs"
 
 cleanup() {
     sync
     umount "$MNT_BOOT" 2>/dev/null || true
     umount "$MNT_ROOTFS" 2>/dev/null || true
     losetup -d "$LOOP_DEV" 2>/dev/null || true
+    rm -rf "$MNT"
 }
 
 log INFO "Creating disk image"
@@ -26,7 +28,7 @@ parted "$IMG_FILE" --script mkpart primary ext4 65MiB 100%
 
 LOOP_DEV=$(losetup -fP --show "$IMG_FILE")
 trap cleanup EXIT
-udevadm settle # wait for udev to create the ${LOOP_DEV}pN partition nodes
+udevadm settle # wait for the ${LOOP_DEV}pN partition nodes
 
 log INFO "Formatting filesystems"
 mkfs.vfat -F 32 -n BOOT "${LOOP_DEV}p1" >/dev/null
@@ -39,10 +41,8 @@ mount "${LOOP_DEV}p2" "$MNT_ROOTFS"
 log INFO "Populating filesystems"
 cp -a "$BUILD_DIR"/rootfs/. "$MNT_ROOTFS/"
 
-# Static boot-partition files (setup, etc.)
 if [ -d "$BASE_DIR/overlays/boot" ]; then
 	cp -r "$BASE_DIR"/overlays/boot/. "$MNT_BOOT/"
-	rm -f "$MNT_BOOT/.keep"
 fi
 
 # Move the package-staged boot slot(s) onto the boot partition

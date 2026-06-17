@@ -19,31 +19,25 @@ if [ -f "$ini" ]; then
 	rm -f "$ini"   # holds plaintext passwords
 fi
 
-# Set the hostname
 echo "$hostname" > /etc/hostname
 hostname "$hostname"
 sed -i "2i 127.0.1.1\t$hostname" /etc/hosts
 
-# Set the timezone
 [ -e "/usr/share/zoneinfo/$timezone" ] || timezone=UTC
 ln -sf "/usr/share/zoneinfo/$timezone" /etc/localtime
 echo "$timezone" > /etc/timezone
 
-# Set the root password
 echo "root:$rootpw" | chpasswd
 
-# Create the user
 adduser --disabled-password --gecos "" "$username"
 adduser "$username" sudo
 echo "$username:$userpw" | chpasswd
 
-# Generate unique host keys
 for t in rsa ecdsa ed25519; do
 	key="/etc/dropbear/dropbear_${t}_host_key"
 	[ -f "$key" ] || dropbearkey -t "$t" -f "$key" >/dev/null 2>&1
 done
 
-# Expand the root filesystem
 growpart /dev/mmcblk0 2 || true
 resize2fs /dev/mmcblk0p2 || true
 

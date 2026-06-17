@@ -1,5 +1,4 @@
 @echo off
-REM WMT OS Setup Launcher
 REM For Windows NT and CE
 
 if "%OS%"=="Windows_NT" goto NT

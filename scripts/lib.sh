@@ -1,6 +1,4 @@
 #!/bin/bash
-# Locate the repo and define log(). Sourced first by every script, before ./config,
-# so the settings file can stay pure data that cannot self-locate.
 
 export BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 export KERNEL_DIR="$BASE_DIR/linux-wmt"

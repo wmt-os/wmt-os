@@ -6,17 +6,13 @@ set -eu
 
 cd "$KERNEL_DIR"
 
-RELEASE=$(make -s kernelrelease)              # uname -r, e.g. 6.12.93-wm8505-g<commit>
-KERNEL_PKG="linux-image-$RELEASE"             # versioned (per-commit) kernel package name
-UPSTREAM=$(make -s kernelversion)             # e.g. 6.12.93
+RELEASE=$(make -s kernelrelease)
+KERNEL_PKG="linux-image-$RELEASE"
+UPSTREAM=$(make -s kernelversion)
 KCOMMIT=$(git rev-parse --short=12 HEAD 2>/dev/null || echo 0)
 
-# Each package embeds a content id in its version so the publish step can ship only real
-# changes: the kernel a hash of its whole .config (deterministic across runs
-# on a stable host) plus the cross flags .config doesn't record, the metapackage the kernel
-# commit it tracks, wmt-boot a hash of its shipped files. A toolchain bump shifts the .config
-# hash, which is correct -- the emitted binary differs. A UTC timestamp supplies the monotonic
-# revision; an upstream bump naturally dominates it.
+# Each package embeds a content id in its version so publish ships only real changes:
+# kernel = hash(.config + cross flags); metapackage = tracked commit; wmt-boot = hash(files).
 CONFIGHASH=$({ cat .config; printf '%s\n' "$ARCH" "$CROSS_COMPILE" "$KCFLAGS"; } | sha256sum | cut -c1-12)
 WMTBOOT_HASH=$(cat "$BASE_DIR"/packages/wmt-boot/* | sha256sum | cut -c1-12)
 STAMP=$(date -u +%Y%m%d%H%M%S)
@@ -29,7 +25,7 @@ export DEBFULLNAME="$BUILDER_NAME" DEBEMAIL="$BUILDER_EMAIL"
 
 DEBS="$BUILD_DIR/debs"
 mkdir -p "$DEBS"
-rm -f "$DEBS"/*.deb "$DEBS"/Packages.gz       # the local repo holds only this build
+rm -f "$DEBS"/*.deb "$DEBS"/Packages.gz
 
 log INFO "Building $KERNEL_PKG ($KERNEL_VERSION) with bindeb-pkg"
 # Serial: parallel dtbs_install races on `install -d` (notably under uutils).
