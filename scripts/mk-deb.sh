@@ -28,9 +28,9 @@ mkdir -p "$DEBS"
 rm -f "$DEBS"/*.deb "$DEBS"/Packages.gz
 
 log INFO "Building $KERNEL_PKG ($KERNEL_VERSION) with bindeb-pkg"
-# Serial: parallel dtbs_install races on `install -d` (notably under uutils).
+# -j1: parallel dtbs_install races on `install -d` (notably under uutils).
 # DPKG_FLAGS=-d skips the target-arch build-dep check (we cross-build natively).
-make bindeb-pkg KBUILD_DEBARCH=armel KDEB_PKGVERSION="$KERNEL_VERSION" KDEB_COMPRESS=xz DPKG_FLAGS=-d
+make -j1 bindeb-pkg KBUILD_DEBARCH=armel KDEB_PKGVERSION="$KERNEL_VERSION" KDEB_COMPRESS=xz DPKG_FLAGS=-d
 # Keep only the image deb; discard the headers/libc-dev/changes/buildinfo beside it.
 mv "$BASE_DIR/${KERNEL_PKG}_${KERNEL_VERSION}_"*.deb "$DEBS/"
 rm -f "$BASE_DIR"/linux-headers-*.deb "$BASE_DIR"/linux-libc-dev_*.deb \
@@ -53,8 +53,7 @@ Section: kernel
 Priority: optional
 Depends: u-boot-tools
 Description: WonderMedia WM8505 boot integration
- Sets up each installed kernel for the WM8505's U-Boot, keeping the previous
- kernel as a one-step rollback.
+ Builds each kernel's U-Boot boot image, keeping the previous one as a rollback.
 EOF
 dpkg-deb --root-owner-group --build "$staging" "$DEBS/wmt-boot_${WMTBOOT_VERSION}_all.deb" >/dev/null
 rm -rf "$staging"
@@ -71,8 +70,7 @@ Section: kernel
 Priority: optional
 Depends: $KERNEL_PKG, wmt-boot
 Description: Linux kernel for the WonderMedia WM8505 (metapackage)
- Depends on the latest WM8505 kernel and its boot integration, so "apt upgrade"
- keeps the device on the current kernel.
+ Depends on the latest WM8505 kernel and its boot integration.
 EOF
 dpkg-deb --root-owner-group --build "$staging" "$DEBS/${PACKAGE_NAME}_${META_VERSION}_armel.deb" >/dev/null
 rm -rf "$staging"
