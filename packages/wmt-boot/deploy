@@ -30,7 +30,8 @@ mkdir -p "$new"
 cat "$image" "$dtb" > "$new/.payload"
 mkimage -A arm -O linux -T kernel -C none -a 0x8000 -e 0x8000 -n linux-wmt \
 	-d "$new/.payload" "$new/uzImage.bin" >/dev/null
-build_time=$(date -ur "$image" +"%Y-%m-%d %H:%M:%S UTC")
+stamp=$(dpkg-query -W -f='${Version}' "linux-image-$version" | sed 's/.*-//; s/+.*//')
+build_time=$(date -u -d "@$stamp" +"%Y-%m-%d %H:%M:%S UTC")
 sed "1i setenv KERNEL_RELEASE $version\nsetenv BUILD_TIME $build_time" "$template" > "$new/.payload"
 mkimage -A arm -O linux -T script -C none -a 1 -e 0 -n "WMT OS boot script" \
 	-d "$new/.payload" "$new/scriptcmd" >/dev/null

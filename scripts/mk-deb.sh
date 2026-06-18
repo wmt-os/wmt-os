@@ -30,7 +30,9 @@ rm -f "$DEBS"/*.deb "$DEBS"/Packages.gz
 log INFO "Building $KERNEL_PKG ($KERNEL_VERSION) with bindeb-pkg"
 # -j1: parallel dtbs_install races on `install -d` (notably under uutils).
 # DPKG_FLAGS=-d skips the target-arch build-dep check (we cross-build natively).
-make -j1 bindeb-pkg KBUILD_DEBARCH=armel KDEB_PKGVERSION="$KERNEL_VERSION" KDEB_COMPRESS=xz DPKG_FLAGS=-d
+# KBUILD_BUILD_TIMESTAMP renders the version stamp as the kernel's native local date.
+make -j1 bindeb-pkg KBUILD_DEBARCH=armel KDEB_PKGVERSION="$KERNEL_VERSION" \
+	KBUILD_BUILD_TIMESTAMP="$(LC_ALL=C date -d @$STAMP)" KDEB_COMPRESS=xz DPKG_FLAGS=-d
 # Keep only the image deb; discard the headers/libc-dev/changes/buildinfo beside it.
 mv "$BASE_DIR/${KERNEL_PKG}_${KERNEL_VERSION}_"*.deb "$DEBS/"
 rm -f "$BASE_DIR"/linux-headers-*.deb "$BASE_DIR"/linux-libc-dev_*.deb \
