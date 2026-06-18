@@ -13,9 +13,9 @@ KCOMMIT=$(git rev-parse --short=12 HEAD 2>/dev/null || echo 0)
 
 # Each package embeds a content id in its version so publish ships only real changes:
 # kernel = hash(.config + cross flags); metapackage = tracked commit; wmt-boot = hash(files).
-CONFIGHASH=$({ cat .config; printf '%s\n' "$ARCH" "$CROSS_COMPILE" "$KCFLAGS"; } | sha256sum | cut -c1-12)
-WMTBOOT_HASH=$(cat "$BASE_DIR"/packages/wmt-boot/* | sha256sum | cut -c1-12)
-STAMP=$(date -u +%Y%m%d%H%M%S)
+CONFIGHASH=$({ cat .config; printf '%s\n' "$ARCH" "$CROSS_COMPILE" "$KCFLAGS"; } | sha256sum | cut -c1-8)
+WMTBOOT_HASH=$(cat "$BASE_DIR"/packages/wmt-boot/* | sha256sum | cut -c1-8)
+STAMP=$(date +%s)
 
 KERNEL_VERSION="$UPSTREAM-$STAMP+c$CONFIGHASH"
 META_VERSION="$UPSTREAM-$STAMP+g$KCOMMIT"
