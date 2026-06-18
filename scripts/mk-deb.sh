@@ -6,20 +6,19 @@ set -eu
 
 cd "$KERNEL_DIR"
 
-RELEASE=$(make -s kernelrelease)
-KERNEL_PKG="linux-image-$RELEASE"
 UPSTREAM=$(make -s kernelversion)
-KCOMMIT=$(git rev-parse --short=12 HEAD 2>/dev/null || echo 0)
-
-# Each package embeds a content id in its version so publish ships only real changes:
-# kernel = hash(.config + cross flags); metapackage = tracked commit; wmt-boot = hash(files).
 CONFIGHASH=$({ cat .config; printf '%s\n' "$ARCH" "$CROSS_COMPILE" "$KCFLAGS"; } | sha256sum | cut -c1-8)
 WMTBOOT_HASH=$(cat "$BASE_DIR"/packages/wmt-boot/* | sha256sum | cut -c1-8)
 STAMP=$(date +%s)
 
-KERNEL_VERSION="$UPSTREAM-$STAMP+c$CONFIGHASH"
-META_VERSION="$UPSTREAM-$STAMP+g$KCOMMIT"
-WMTBOOT_VERSION="$UPSTREAM-$STAMP+w$WMTBOOT_HASH"
+# Confighash in the release -> each (commit,config) co-installs with its own /lib/modules.
+RELEASE=$(make -s kernelrelease LOCALVERSION=-c$CONFIGHASH)
+KERNEL_PKG="linux-image-$RELEASE"
+
+# Stamp is apt's monotonic upgrade counter; wmt-boot carries no kernel version (independent glue).
+KERNEL_VERSION="$UPSTREAM-$STAMP"
+META_VERSION="$UPSTREAM-$STAMP"
+WMTBOOT_VERSION="$STAMP+w$WMTBOOT_HASH"
 
 export DEBFULLNAME="$BUILDER_NAME" DEBEMAIL="$BUILDER_EMAIL"
 
@@ -30,8 +29,8 @@ rm -f "$DEBS"/*.deb "$DEBS"/Packages.gz
 log INFO "Building $KERNEL_PKG ($KERNEL_VERSION) with bindeb-pkg"
 # -j1: parallel dtbs_install races on `install -d` (notably under uutils).
 # DPKG_FLAGS=-d skips the target-arch build-dep check (we cross-build natively).
-# KBUILD_BUILD_TIMESTAMP renders the version stamp as the kernel's native local date.
-make -j1 bindeb-pkg KBUILD_DEBARCH=armel KDEB_PKGVERSION="$KERNEL_VERSION" \
+# KBUILD_BUILD_TIMESTAMP bakes STAMP as uname -v's local date.
+make -j1 bindeb-pkg KBUILD_DEBARCH=armel KDEB_PKGVERSION="$KERNEL_VERSION" LOCALVERSION=-c$CONFIGHASH \
 	KBUILD_BUILD_TIMESTAMP="$(LC_ALL=C date -d @$STAMP)" KDEB_COMPRESS=xz DPKG_FLAGS=-d
 # Keep only the image deb; discard the headers/libc-dev/changes/buildinfo beside it.
 mv "$BASE_DIR/${KERNEL_PKG}_${KERNEL_VERSION}_"*.deb "$DEBS/"

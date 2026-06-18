@@ -13,7 +13,7 @@ export KERNEL_VERSION_PATTERN='^6\.12\.'
 export BUILDER_NAME="WMT Automation"
 export BUILDER_EMAIL="auto@wmt.os"
 
-# Kernels are linux-image-<release> (ends -$KERNEL_FLAVOR-g<commit>); $PACKAGE_NAME tracks the newest
+# Kernels are linux-image-<ver>-$KERNEL_FLAVOR-c<confighash>-g<commit>; $PACKAGE_NAME tracks the newest
 export KERNEL_FLAVOR="wm8505"
 export PACKAGE_NAME="linux-image-$KERNEL_FLAVOR"
 
