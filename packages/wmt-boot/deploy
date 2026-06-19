@@ -1,18 +1,18 @@
 #!/bin/sh
-# Build a kernel's boot slot (uzImage.bin + scriptcmd) and rotate the old slot to rollback.
-# Arg 1: version (default: newest installed).
+# Build a kernel's boot slot (uzImage.bin + scriptcmd) and rotate the old slot to rollback
+# $1: version (default: newest installed)
 set -e
 
 boot=/boot/uboot
 template=/usr/share/wmt-boot/uboot.cmd
 
-# Skip the mount check in the build chroot (no systemd); on a device the FAT must be mounted.
+# Skip the mount check in the build chroot (no systemd); on a device the FAT must be mounted
 if [ -d /run/systemd/system ] && ! mountpoint -q "$boot"; then
 	echo "wmt-deploy-boot: $boot is not mounted; refusing to write the boot slot" >&2
 	exit 1
 fi
 
-# Defer if mkimage isn't ready (bootstrap ordering); wmt-boot's postinst redeploys.
+# Defer if mkimage isn't ready (bootstrap ordering); wmt-boot's postinst redeploys
 command -v mkimage >/dev/null 2>&1 || exit 0
 
 version=${1:-$(ls -t /boot/vmlinuz-* 2>/dev/null | head -n1 | sed 's#.*/vmlinuz-##')}
@@ -22,7 +22,7 @@ image="/boot/vmlinuz-$version"
 dtb=$(find "/usr/lib/linux-image-$version" -name 'wm8505-ref.dtb' 2>/dev/null | head -n1)
 [ -n "$dtb" ] || exit 0
 
-# Stage on the FAT, not /tmp: keeps the final swap an in-filesystem rename, and /tmp is a tiny tmpfs.
+# Stage on the FAT, not /tmp: keeps the final swap an in-filesystem rename, and /tmp is a tiny tmpfs
 new="$boot/.script.new"
 rm -rf "$new"
 mkdir -p "$new"
@@ -39,7 +39,7 @@ rm -f "$new/.payload"
 printf '%s\n' "$version" > "$new/version"
 sync
 
-# Demote the active slot to rollback only if it holds a different, still-installed kernel.
+# Demote the active slot to rollback only if it holds a different, still-installed kernel
 active=$(cat "$boot/script/version" 2>/dev/null || true)
 if [ -d "$boot/script" ] && [ "$active" != "$version" ] && [ -f "/boot/vmlinuz-$active" ]; then
 	rm -rf "$boot/script.bak"
@@ -48,7 +48,7 @@ else
 	rm -rf "$boot/script"
 fi
 mv "$new" "$boot/script"
-# Drop the rollback slot if it now duplicates the active kernel.
+# Drop the rollback slot if it now duplicates the active kernel
 if [ "$(cat "$boot/script.bak/version" 2>/dev/null)" = "$version" ]; then
 	rm -rf "$boot/script.bak"
 fi

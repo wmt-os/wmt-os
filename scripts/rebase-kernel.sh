@@ -11,7 +11,7 @@ UPSTREAM_KERNEL=$(wget -q -O - "$KERNEL_UPSTREAM_RELEASES" | jq -r '.releases[].
 [ -n "$UPSTREAM_KERNEL" ] || { log ERROR "Could not fetch upstream kernel version"; exit 1; }
 
 if [ "$(printf '%s\n' "$CURRENT_KERNEL" "$UPSTREAM_KERNEL" | sort -V | tail -n 1)" = "$CURRENT_KERNEL" ]; then
-	log OK "Kernel up-to-date ($CURRENT_KERNEL)"
+	log INFO "Kernel already up-to-date ($CURRENT_KERNEL)"
 	exit 0
 fi
 
@@ -22,4 +22,4 @@ git config --get user.name >/dev/null || {
 }
 git fetch --no-tags "$KERNEL_UPSTREAM_REPO" "v$UPSTREAM_KERNEL"
 git rebase FETCH_HEAD
-log OK "Rebased to v$UPSTREAM_KERNEL"
+log OK "Rebased to $UPSTREAM_KERNEL"

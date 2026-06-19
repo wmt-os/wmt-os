@@ -11,7 +11,7 @@ trap 'rm -rf "$tmp"' EXIT
 
 log INFO "Downloading Debian config"
 DEB_URL=$(lynx -dump -listonly -nonumbers "$DEBIAN_CONFIG_POOL" | grep "$DEBIAN_CONFIG_PATTERN" | tail -n 1)
-[ -n "$DEB_URL" ] || { log ERROR "Failed to find Debian config matching $DEBIAN_CONFIG_PATTERN"; exit 1; }
+[ -n "$DEB_URL" ] || { log ERROR "Failed to find Debian config"; exit 1; }
 wget -q -O "$tmp/config.deb" "$DEB_URL"
 ar p "$tmp/config.deb" data.tar.xz | tar -xOJf - "$DEBIAN_CONFIG_FILE" | unxz > "$tmp/config.debian"
 

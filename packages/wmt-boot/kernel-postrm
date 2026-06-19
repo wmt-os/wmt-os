@@ -1,13 +1,13 @@
 #!/bin/sh
 # Kernel removed (not an in-place upgrade): keep the boot slots pointing at
-# installed kernels. $1 = the removed kernel's release.
+# installed kernels. $1: the removed kernel's release
 case " $DEB_MAINT_PARAMS " in *" remove "*|*" purge "*) ;; *) exit 0 ;; esac
 boot=/boot/uboot
-# Drop the rollback slot if its kernel was the one removed.
+# Drop the rollback slot if its kernel was the one removed
 if [ "$1" = "$(cat "$boot/script.bak/version" 2>/dev/null)" ]; then
 	rm -rf "$boot/script.bak"; sync
 fi
-# If the active kernel was removed, redeploy the newest remaining (coalesced via the trigger).
+# If the active kernel was removed, redeploy the newest remaining (coalesced via the trigger)
 if [ "$1" = "$(cat "$boot/script/version" 2>/dev/null)" ]; then
 	[ -d /run ] && : > /run/wmt-boot.deploy-newest
 	dpkg-trigger --no-await wmt-deploy-boot
