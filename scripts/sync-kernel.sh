@@ -12,8 +12,8 @@ if [ "$CURRENT_BRANCH" != "$KERNEL_BRANCH" ] && [ "${FORCE:-}" != "1" ]; then
 	exit 1
 fi
 
-log INFO "Syncing kernel to origin/$KERNEL_BRANCH"
-git fetch origin
+log INFO "Syncing kernel to upstream"
 git switch -f "$KERNEL_BRANCH"
-git reset --hard "origin/$KERNEL_BRANCH"
+git fetch
+git reset --hard @{upstream}
 log OK "Kernel synced"
