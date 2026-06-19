@@ -11,11 +11,11 @@ MNT_BOOT="$MNT/boot"
 MNT_ROOTFS="$MNT/rootfs"
 
 cleanup() {
-    sync
-    umount "$MNT_BOOT" 2>/dev/null || true
-    umount "$MNT_ROOTFS" 2>/dev/null || true
-    losetup -d "$LOOP_DEV" 2>/dev/null || true
-    rm -rf "$MNT"
+	sync
+	umount "$MNT_BOOT" 2>/dev/null || true
+	umount "$MNT_ROOTFS" 2>/dev/null || true
+	losetup -d "$LOOP_DEV" 2>/dev/null || true
+	rm -rf "$MNT"
 }
 
 log INFO "Creating disk image"
@@ -40,12 +40,9 @@ mount "${LOOP_DEV}p2" "$MNT_ROOTFS"
 
 log INFO "Populating filesystems"
 cp -a "$BUILD_DIR"/rootfs/. "$MNT_ROOTFS/"
+cp -r "$BASE_DIR"/overlays/boot/. "$MNT_BOOT/"
 
-if [ -d "$BASE_DIR/overlays/boot" ]; then
-	cp -r "$BASE_DIR"/overlays/boot/. "$MNT_BOOT/"
-fi
-
-# Move the package-staged boot slot(s) onto the boot partition
+# Move the package-staged boot slot onto the boot partition
 cp -r "$MNT_ROOTFS"/boot/uboot/. "$MNT_BOOT/"
 rm -rf "$MNT_ROOTFS"/boot/uboot/*
 
