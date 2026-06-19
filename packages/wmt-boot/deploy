@@ -12,9 +12,6 @@ if [ -d /run/systemd/system ] && ! mountpoint -q "$boot"; then
 	exit 1
 fi
 
-# Defer if mkimage isn't ready (bootstrap ordering); wmt-boot's postinst redeploys
-command -v mkimage >/dev/null 2>&1 || exit 0
-
 version=${1:-$(ls -t /boot/vmlinuz-* 2>/dev/null | head -n1 | sed 's#.*/vmlinuz-##')}
 image="/boot/vmlinuz-$version"
 [ -n "$version" ] && [ -f "$image" ] || exit 0
