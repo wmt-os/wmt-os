@@ -19,15 +19,14 @@ ID=$({ printf '%s\n' "$commit" "$dirty"; cat .config; \
 RELEASE=$(make -s kernelrelease LOCALVERSION=-$ID)
 KERNEL_PKG="linux-image-$RELEASE"
 
-# Stamp is apt's upgrade counter and the sole leading numeric run, so rebuilds sort monotonically.
-# Kernel + meta: identity is in the name/Depends, so the deb version is just the stamp.
-# wmt-boot: stamp then content hash (the hash must stay after the stamp, or dpkg's leading-numeric
-# compare follows the hash, not time -> non-monotonic).
+# Stamp is apt's upgrade counter, so rebuilds sort monotonically
+# Kernel + meta: identity is in the name/Depends, so the deb version is just the stamp
 KERNEL_VERSION="$STAMP"
 META_VERSION="$STAMP"
 WMTBOOT_VERSION="$STAMP+$WMTBOOT_HASH"
 
 export DEBFULLNAME="$BUILDER_NAME" DEBEMAIL="$BUILDER_EMAIL"
+export KBUILD_BUILD_VERSION=1 # deterministic uname -v '#1'
 
 DEBS="$BUILD_DIR/debs"
 mkdir -p "$DEBS"

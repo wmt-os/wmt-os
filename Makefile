@@ -10,12 +10,11 @@ PROFILE ?= standard
 KMAKE := source ./config && $(MAKE) -C linux-wmt -j$(NPROC)
 
 ROOTFS_DEPS := config bootstrap/hooks.sh $(shell find overlays/rootfs bootstrap/sources -type f)
-# Boot overlay bypasses the rootfs, so the image must depend on it directly
 BOOT_DEPS := $(shell find overlays/boot -type f)
 
 .DEFAULT_GOAL := help
 .NOTPARALLEL:
-.PHONY: help all deps repo sync reset rebase kconfig kernel modules deb rootfs standard desktop image clean distclean
+.PHONY: help all deps repo sync reset rebase kconfig kernel modules deb rootfs standard desktop image clean mrproper distclean
 
 help:  ## Show this help text
 	@awk -F':.*## ' '/^[a-z][a-z-]*:.*##/ {printf "  \033[36m%-9s\033[0m  %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -45,12 +44,12 @@ rebase: reset  ## Rebase onto the latest upstream kernel (discards local changes
 # ---- Kernel ----
 
 kconfig: linux-wmt/.config  ## Generate the kernel config from the seed
-linux-wmt/.config: kernel-seed.config | linux-wmt/.git
+linux-wmt/.config: FORCE | linux-wmt/.git
 	@scripts/mk-kconfig.sh
 
 linux-wmt/arch/arm/boot/zImage: linux-wmt/.config FORCE
 	$(KMAKE) zImage dtbs
-kernel: linux-wmt/arch/arm/boot/zImage  ## Build the kernel image and device tree
+kernel: linux-wmt/arch/arm/boot/zImage  ## Build the kernel image
 
 linux-wmt/modules.order: linux-wmt/.config FORCE
 	$(KMAKE) modules
@@ -60,7 +59,7 @@ FORCE:
 
 # ---- Debian package ----
 
-deb: build/debs/Packages.gz  ## Build the kernel + metapackage + boot glue and local APT index
+deb: build/debs/Packages.gz  ## Build the kernel deb packages
 build/debs/Packages.gz: linux-wmt/arch/arm/boot/zImage linux-wmt/modules.order $(wildcard packages/wmt-boot/*)
 	@scripts/mk-deb.sh
 
@@ -85,6 +84,9 @@ desktop:  ## Build the desktop disk image
 
 clean:  ## Remove build artifacts
 	@sudo rm -rf build/
+
+mrproper: clean  ## Remove build artifacts and reset kernel repo
+	@scripts/reset-kernel.sh
 
 distclean: clean  ## Remove build artifacts and the kernel repo
 	@rm -rf linux-wmt/
