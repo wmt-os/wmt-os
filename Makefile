@@ -38,7 +38,7 @@ sync: repo  ## Sync the kernel repo to origin (keeps build artifacts)
 reset: sync  ## Reset the kernel repo to origin (discards local changes)
 	@scripts/reset-kernel.sh
 
-rebase: reset  ## Rebase onto the latest upstream kernel (discards local changes)
+rebase: sync  ## Rebase onto the latest upstream kernel (keeps build artifacts)
 	@scripts/rebase-kernel.sh
 
 # ---- Kernel ----
