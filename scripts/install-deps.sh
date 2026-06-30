@@ -1,4 +1,6 @@
 #!/bin/bash
+# Copyright (C) 2026 Logan Russell <me@lrussell.net>
+
 set -eu
 . "$(dirname "$0")/lib.sh"
 

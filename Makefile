@@ -1,6 +1,6 @@
-# SPDX-License-Identifier: MIT
-#
 # WMT OS Build System
+#
+# Copyright (C) 2026 Logan Russell <me@lrussell.net>
 
 SHELL := /bin/bash
 NPROC := $(shell nproc)

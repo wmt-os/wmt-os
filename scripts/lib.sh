@@ -1,4 +1,5 @@
 #!/bin/bash
+# Copyright (C) 2026 Logan Russell <me@lrussell.net>
 
 export BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 export KERNEL_DIR="$BASE_DIR/linux-wmt"

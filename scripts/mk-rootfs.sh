@@ -1,5 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2026 Logan Russell <me@lrussell.net>
+
 # REQUIRES: binfmt-support debian-archive-keyring mmdebstrap qemu-user-binfmt
+
 set -eu
 . "$(dirname "$0")/lib.sh"
 

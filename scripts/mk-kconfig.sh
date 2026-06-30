@@ -1,5 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2026 Logan Russell <me@lrussell.net>
+
 # REQUIRES: bison build-essential flex gcc-arm-linux-gnueabi lynx wget
+
 set -eu
 . "$(dirname "$0")/lib.sh"
 

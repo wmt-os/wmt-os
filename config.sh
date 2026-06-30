@@ -1,4 +1,6 @@
 # WMT OS Build Settings
+#
+# Copyright (C) 2026 Logan Russell <me@lrussell.net>
 
 export ARCH="arm"
 export CROSS_COMPILE="arm-linux-gnueabi-"

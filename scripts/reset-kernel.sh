@@ -1,5 +1,8 @@
 #!/bin/bash
+# Copyright (C) 2026 Logan Russell <me@lrussell.net>
+
 # REQUIRES: git
+
 set -eu
 . "$(dirname "$0")/lib.sh"
 
