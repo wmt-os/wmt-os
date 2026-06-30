@@ -3,6 +3,7 @@
 export BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 export KERNEL_DIR="$BASE_DIR/linux-wmt"
 export BUILD_DIR="$BASE_DIR/build"
+. "$BASE_DIR/config.sh"
 
 log() {
 	local level=$1

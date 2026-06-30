@@ -2,7 +2,6 @@
 # REQUIRES: binfmt-support debian-archive-keyring mmdebstrap qemu-user-binfmt
 set -eu
 . "$(dirname "$0")/lib.sh"
-. "$BASE_DIR/config"
 
 log INFO "Bootstrapping rootfs ($PROFILE)"
 

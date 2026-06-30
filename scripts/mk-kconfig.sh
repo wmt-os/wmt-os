@@ -2,7 +2,6 @@
 # REQUIRES: bison build-essential flex gcc-arm-linux-gnueabi lynx wget
 set -eu
 . "$(dirname "$0")/lib.sh"
-. "$BASE_DIR/config"
 
 log INFO "Generating kernel config"
 

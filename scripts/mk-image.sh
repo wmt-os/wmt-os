@@ -2,7 +2,6 @@
 # REQUIRES: dosfstools e2fsprogs parted pigz pv zerofree
 set -eu
 . "$(dirname "$0")/lib.sh"
-. "$BASE_DIR/config"
 
 IMG_FILE="$BUILD_DIR/disk.img"
 IMG_GZ="$BUILD_DIR/disk-$PROFILE.img.gz"

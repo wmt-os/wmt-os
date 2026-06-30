@@ -2,7 +2,6 @@
 # REQUIRES: bc bison build-essential debhelper dpkg-dev fakeroot flex gcc-arm-linux-gnueabi kmod libssl-dev rsync
 set -eu
 . "$(dirname "$0")/lib.sh"
-. "$BASE_DIR/config"
 
 cd "$KERNEL_DIR"
 

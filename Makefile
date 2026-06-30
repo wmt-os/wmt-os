@@ -6,10 +6,10 @@ SHELL := /bin/bash
 NPROC := $(shell nproc)
 PROFILE ?= standard
 
-# Source ./config so the kernel build inherits ARCH/CROSS_COMPILE/KCFLAGS
-KMAKE := source ./config && $(MAKE) -C linux-wmt -j$(NPROC)
+# Source ./config.sh so the kernel build inherits ARCH/CROSS_COMPILE/KCFLAGS
+KMAKE := . ./config.sh && $(MAKE) -C linux-wmt -j$(NPROC)
 
-ROOTFS_DEPS := config bootstrap/hooks.sh $(shell find overlays/rootfs bootstrap/sources -type f)
+ROOTFS_DEPS := config.sh bootstrap/hooks.sh $(shell find overlays/rootfs bootstrap/sources -type f)
 BOOT_DEPS := $(shell find overlays/boot -type f)
 
 .DEFAULT_GOAL := help

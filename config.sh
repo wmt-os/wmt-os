@@ -1,4 +1,4 @@
-# WMT OS build settings
+# WMT OS Build Settings
 
 export ARCH="arm"
 export CROSS_COMPILE="arm-linux-gnueabi-"
@@ -10,8 +10,8 @@ export KERNEL_UPSTREAM_RELEASES="https://www.kernel.org/releases.json"
 export KERNEL_UPSTREAM_REPO="https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git"
 export KERNEL_VERSION_PATTERN='^6\.12\.'
 
-export BUILDER_NAME="WMT Automation"
-export BUILDER_EMAIL="auto@wmt-os.org"
+export BUILDER_NAME="WMT OS Builder"
+export BUILDER_EMAIL="root@wmt-os.org"
 
 # Kernels are linux-image-<ver>-$KERNEL_FLAVOR-<id>; $PACKAGE_NAME tracks the newest
 export KERNEL_FLAVOR="wm8505"

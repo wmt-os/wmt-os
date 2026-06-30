@@ -2,7 +2,6 @@
 # REQUIRES: build-essential git jq wget
 set -eu
 . "$(dirname "$0")/lib.sh"
-. "$BASE_DIR/config"
 
 cd "$KERNEL_DIR"
 
