@@ -1,5 +1,5 @@
 Types: deb
-URIs: https://apt.lrussell.net/
+URIs: https://apt.wmt-os.org/
 Suites: trixie
 Components: main
 Architectures: armel
