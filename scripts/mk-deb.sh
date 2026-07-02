@@ -11,20 +11,19 @@ cd "$KERNEL_DIR"
 STAMP=$(date +%s)
 export STAMP
 
-# Content id: sha256 of HEAD, the dirty tree, .config, and the cross compile flags.
+# Content id: sha256 of HEAD, the dirty diff, .config, and the cross compile flags;
+# a dirty tree marks the id, and the publisher refuses dirty builds
 commit=$(git rev-parse --verify HEAD)
-dirty=$(git --no-optional-locks status --porcelain -uno)
-ID=$({ printf '%s\n' "$commit" "$dirty"; cat .config; \
-	printf '%s\n' "$ARCH" "$CROSS_COMPILE" "$KCFLAGS"; } | sha256sum | cut -c1-12)
+git --no-optional-locks diff --quiet HEAD && dirty= || dirty=-dirty
+ID=$({ printf '%s\n' "$commit"; git --no-optional-locks diff HEAD; cat .config; \
+	printf '%s\n' "$ARCH" "$CROSS_COMPILE" "$KCFLAGS"; } | sha256sum | cut -c1-12)$dirty
 
 # The id is appended to the release, so distinct kernels co-install under their own /lib/modules
 RELEASE=$(make -s kernelrelease LOCALVERSION=-$ID)
 KERNEL_PKG="linux-image-$RELEASE"
 
-# Stamp is apt's upgrade counter, so rebuilds sort monotonically
-# Kernel + meta: identity is in the name/Depends, so the deb version is just the stamp
+# Stamp is apt's upgrade counter; the kernel's identity is already in the name
 KERNEL_VERSION="$STAMP"
-META_VERSION="$STAMP"
 
 export DEBFULLNAME="$BUILDER_NAME" DEBEMAIL="$BUILDER_EMAIL"
 export KBUILD_BUILD_VERSION=1 # deterministic uname -v '#1'
@@ -45,12 +44,9 @@ rm -f "$BASE_DIR"/linux-headers-*.deb "$BASE_DIR"/linux-libc-dev_*.deb \
 
 "$BASE_DIR/packages/wmt-boot/build-deb.sh"
 
-log INFO "Building $PACKAGE_NAME metapackage ($META_VERSION)"
-staging=$(mktemp -d)
-mkdir -p "$staging/DEBIAN"
-cat > "$staging/DEBIAN/control" <<EOF
+# The meta's key is its control hash, so it changes exactly when its kernel does
+meta_control=$(cat <<EOF
 Package: $PACKAGE_NAME
-Version: $META_VERSION
 Architecture: armel
 Maintainer: $BUILDER_NAME <$BUILDER_EMAIL>
 Section: kernel
@@ -59,6 +55,13 @@ Depends: $KERNEL_PKG, wmt-boot
 Description: Linux kernel for the WonderMedia WM8505 (metapackage)
  Depends on the latest WM8505 kernel and its boot integration.
 EOF
+)
+META_VERSION="$STAMP+$(printf '%s\n' "$meta_control" | sha256sum | cut -c1-12)"
+
+log INFO "Building $PACKAGE_NAME metapackage ($META_VERSION)"
+staging=$(mktemp -d)
+mkdir -p "$staging/DEBIAN"
+printf '%s\nVersion: %s\n' "$meta_control" "$META_VERSION" > "$staging/DEBIAN/control"
 dpkg-deb --root-owner-group --build "$staging" "$DEBS/${PACKAGE_NAME}_${META_VERSION}_armel.deb" >/dev/null
 rm -rf "$staging"
 
