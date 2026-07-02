@@ -69,9 +69,10 @@ build/.rootfs-$(PROFILE)-stamp: build/debs/Packages.gz $(ROOTFS_DEPS)
 	@sudo PROFILE=$(PROFILE) scripts/mk-rootfs.sh
 	@touch build/.rootfs-$(PROFILE)-stamp
 
-image: build/disk-$(PROFILE).img.gz  ## Build the disk image
-build/disk-$(PROFILE).img.gz: build/.rootfs-$(PROFILE)-stamp
+image: build/.image-$(PROFILE)-stamp  ## Build the disk image
+build/.image-$(PROFILE)-stamp: build/.rootfs-$(PROFILE)-stamp
 	@sudo PROFILE=$(PROFILE) scripts/mk-image.sh
+	@touch build/.image-$(PROFILE)-stamp
 
 standard:  ## Build the standard (default) disk image
 	@$(MAKE) image PROFILE=standard

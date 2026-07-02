@@ -1,13 +1,18 @@
 #!/bin/bash
 # Copyright (C) 2026 Logan Russell <me@lrussell.net>
 
-# REQUIRES: dosfstools e2fsprogs parted pigz pv zerofree
+# REQUIRES: dosfstools e2fsprogs parted pv xz-utils zerofree
 
 set -eu
 . "$(dirname "$0")/lib.sh"
 
+# The image is named by the meta deb's stamp, so it matches the debs and the splash
+set -- "$BUILD_DIR/debs/${PACKAGE_NAME}_"*_armel.deb
+stamp=${1##*/}; stamp=${stamp#"${PACKAGE_NAME}"_}; stamp=${stamp%%[+_]*}
+BUILD_DATE=$(date -u -d "@$stamp" +%Y%m%d)
+
 IMG_FILE="$BUILD_DIR/disk.img"
-IMG_GZ="$BUILD_DIR/disk-$PROFILE.img.gz"
+IMG_XZ="$BUILD_DIR/wmt-os-$PROFILE-$BUILD_DATE.img.xz"
 MNT=$(mktemp -d)
 MNT_BOOT="$MNT/boot"
 MNT_ROOTFS="$MNT/rootfs"
@@ -54,8 +59,9 @@ umount "$MNT_ROOTFS"
 zerofree "${LOOP_DEV}p2"
 
 log INFO "Compressing image"
-pv "$IMG_FILE" | pigz -9 > "$IMG_GZ"
+rm -f "$BUILD_DIR/wmt-os-$PROFILE-"*.img.xz
+pv "$IMG_FILE" | xz -T0 -6 > "$IMG_XZ"
 rm -f "$IMG_FILE"
 
-[ -n "${SUDO_UID:-}" ] && chown "$SUDO_UID:$SUDO_GID" "$IMG_GZ"
-log OK "Image ready: $IMG_GZ"
+[ -n "${SUDO_UID:-}" ] && chown "$SUDO_UID:$SUDO_GID" "$IMG_XZ"
+log OK "Image ready: $IMG_XZ"
