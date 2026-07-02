@@ -42,9 +42,8 @@ mount "${LOOP_DEV}p2" "$MNT_ROOTFS"
 
 log INFO "Populating filesystems"
 cp -a "$BUILD_DIR"/rootfs/. "$MNT_ROOTFS/"
-cp -r "$BASE_DIR"/overlays/boot/. "$MNT_BOOT/"
 
-# Move the package-staged boot slot onto the boot partition
+# Move the package-staged boot files onto the boot partition
 cp -r "$MNT_ROOTFS"/boot/uboot/. "$MNT_BOOT/"
 rm -rf "$MNT_ROOTFS"/boot/uboot/*
 

@@ -20,3 +20,6 @@ If a kernel update ever misbehaves, you can boot the previous kernel again. Put
 the card in a Windows or Windows CE machine and run rollback.cmd -- it shows the
 current and previous kernels and switches between them. Reboot to apply; run it
 again to switch back.
+
+If the card is ever left without a \script folder (an update interrupted at the
+worst moment), rename script.bak to script and the device will boot again.

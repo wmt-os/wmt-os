@@ -10,7 +10,6 @@ PROFILE ?= standard
 KMAKE := . ./config.sh && $(MAKE) -C linux-wmt -j$(NPROC)
 
 ROOTFS_DEPS := config.sh bootstrap/hooks.sh $(shell find overlays/rootfs bootstrap/sources -type f)
-BOOT_DEPS := $(shell find overlays/boot -type f)
 
 .DEFAULT_GOAL := help
 .NOTPARALLEL:
@@ -60,7 +59,7 @@ FORCE:
 # ---- Debian package ----
 
 deb: build/debs/Packages.gz  ## Build the kernel deb packages
-build/debs/Packages.gz: linux-wmt/arch/arm/boot/zImage linux-wmt/modules.order $(wildcard packages/wmt-boot/*)
+build/debs/Packages.gz: linux-wmt/arch/arm/boot/zImage linux-wmt/modules.order $(shell find packages -type f)
 	@scripts/mk-deb.sh
 
 # ---- Image ----
@@ -71,7 +70,7 @@ build/.rootfs-$(PROFILE)-stamp: build/debs/Packages.gz $(ROOTFS_DEPS)
 	@touch build/.rootfs-$(PROFILE)-stamp
 
 image: build/disk-$(PROFILE).img.gz  ## Build the disk image
-build/disk-$(PROFILE).img.gz: build/.rootfs-$(PROFILE)-stamp $(BOOT_DEPS)
+build/disk-$(PROFILE).img.gz: build/.rootfs-$(PROFILE)-stamp
 	@sudo PROFILE=$(PROFILE) scripts/mk-image.sh
 
 standard:  ## Build the standard (default) disk image

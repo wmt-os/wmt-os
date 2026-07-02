@@ -1,7 +1,16 @@
 #!/bin/sh
 set -e
+boot=/boot/uboot
 case "$1" in
 configure)
+	# Keep the card's user-facing files current with the package
+	if [ -d /run/systemd/system ] && ! mountpoint -q "$boot"; then
+		echo "wmt-boot: $boot is not mounted" >&2
+		exit 1
+	fi
+	mkdir -p "$boot"
+	cp -r /usr/share/wmt-boot/fat/. "$boot"/
+	sync
 	# Activate via trigger (not a direct deploy) so this dedups with the kernel hook in one transaction
 	dpkg-trigger --no-await wmt-deploy-boot
 	;;
