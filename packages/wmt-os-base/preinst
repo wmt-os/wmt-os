@@ -1,0 +1,10 @@
+#!/bin/sh
+# Divert base-files' identity files; Debian's copies keep landing at *.debian
+set -e
+case "$1" in
+install|upgrade)
+	for f in /usr/lib/os-release /etc/issue /etc/issue.net; do
+		dpkg-divert --package wmt-os-base --divert "$f.debian" --rename --add "$f"
+	done
+	;;
+esac

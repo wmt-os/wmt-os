@@ -1,0 +1,21 @@
+#!/bin/sh
+# Derive the identity files from Debian's; the file triggers track base-files
+set -e
+case "$1" in
+configure|triggered)
+	brand() {
+		src=$1 dst=$2
+		shift 2
+		[ -r "$src" ] || return 0
+		sed -e 's/Debian GNU\/Linux/WMT OS/' "$@" "$src" > "$dst"
+	}
+	brand /usr/lib/os-release.debian /usr/lib/os-release \
+		-e 's/^ID=debian/ID=wmt-os\nID_LIKE=debian/' \
+		-e 's#^HOME_URL=.*#HOME_URL="https://wmt-os.org/"#' \
+		-e 's#^SUPPORT_URL=.*#SUPPORT_URL="https://github.com/wmt-os/wmt-os"#' \
+		-e 's#^BUG_REPORT_URL=.*#BUG_REPORT_URL="https://github.com/wmt-os/wmt-os/issues"#'
+	brand /etc/issue.debian /etc/issue
+	brand /etc/issue.net.debian /etc/issue.net
+	brand /usr/share/base-files/motd /etc/motd
+	;;
+esac

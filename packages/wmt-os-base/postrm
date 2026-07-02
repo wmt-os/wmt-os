@@ -1,0 +1,14 @@
+#!/bin/sh
+# Put Debian's identity files back when we go away.
+set -e
+case "$1" in
+remove|abort-install|disappear)
+	for f in /usr/lib/os-release /etc/issue /etc/issue.net; do
+		rm -f "$f"
+		dpkg-divert --package wmt-os-base --rename --remove "$f"
+	done
+	if [ -r /usr/share/base-files/motd ]; then
+		cp -p /usr/share/base-files/motd /etc/motd
+	fi
+	;;
+esac

@@ -1,0 +1,4 @@
+interest-noawait /usr/lib/os-release
+interest-noawait /etc/issue
+interest-noawait /etc/issue.net
+interest-noawait /usr/share/base-files/motd

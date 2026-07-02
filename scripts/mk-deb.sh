@@ -43,6 +43,7 @@ rm -f "$BASE_DIR"/linux-headers-*.deb "$BASE_DIR"/linux-libc-dev_*.deb \
 	"$BASE_DIR"/linux-upstream_*.buildinfo "$BASE_DIR"/linux-upstream_*.changes
 
 "$BASE_DIR/packages/wmt-boot/build-deb.sh"
+"$BASE_DIR/packages/wmt-os-base/build-deb.sh"
 
 # The meta's key is its control hash, so it changes exactly when its kernel does
 meta_control=$(cat <<EOF

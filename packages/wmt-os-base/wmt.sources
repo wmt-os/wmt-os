@@ -3,4 +3,4 @@ URIs: https://apt.wmt-os.org/
 Suites: trixie
 Components: main
 Architectures: armel
-Signed-By: /etc/apt/keyrings/wmt-os.asc
+Signed-By: /etc/apt/keyrings/wmt-os.pgp
