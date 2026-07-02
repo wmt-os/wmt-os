@@ -16,19 +16,23 @@ PACKAGES="$EXTRA_PACKAGES $PACKAGE_NAME wmt-os-base"
 
 cd "$BASE_DIR"
 
-# Install from the local repo; ship bootstrap/sources, drop the bootstrap list
+# Resolve against the local debs, Debian, and the live archive; apt-build.pref
+# orders them (local > archive > Debian) until the real sources land. Bootstrap
+# apt runs host-side, so signed-by names the in-tree keyring
 mmdebstrap \
 	--variant=standard \
 	--include="${PACKAGES// /,}" \
 	--architectures=armel \
 	--components="$DEBIAN_COMPONENTS" \
 	--setup-hook='cp -r overlays/rootfs/. "$1"/' \
+	--setup-hook='install -Dm644 bootstrap/apt-build.pref "$1"/etc/apt/preferences.d/apt-build.pref' \
 	--customize-hook='chroot "$1" /bin/sh < bootstrap/hooks.sh' \
-	--customize-hook='rm -f "$1"/etc/apt/sources.list; cp -r bootstrap/sources/. "$1"/etc/apt/' \
+	--customize-hook='rm -f "$1"/etc/apt/sources.list "$1"/etc/apt/preferences.d/apt-build.pref; cp -r bootstrap/sources/. "$1"/etc/apt/' \
 	trixie \
 	"$ROOTFS_DIR" \
 	"deb [trusted=yes] copy://$BUILD_DIR/debs ./" \
-	"$DEBIAN_MIRROR"
+	"$DEBIAN_MIRROR" \
+	"deb [signed-by=$BASE_DIR/packages/wmt-os-base/wmt-os.pgp] $WMT_MIRROR trixie main"
 
 log INFO "Allocating swapfile"
 dd if=/dev/zero of="$ROOTFS_DIR/swapfile" bs=1M count=256 conv=fsync status=none

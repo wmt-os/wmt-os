@@ -9,7 +9,7 @@ PROFILE ?= standard
 # Source ./config.sh so the kernel build inherits ARCH/CROSS_COMPILE/KCFLAGS
 KMAKE := . ./config.sh && $(MAKE) -C linux-wmt -j$(NPROC)
 
-ROOTFS_DEPS := config.sh bootstrap/hooks.sh $(shell find overlays/rootfs bootstrap/sources -type f)
+ROOTFS_DEPS := config.sh $(shell find overlays/rootfs bootstrap -type f)
 
 .DEFAULT_GOAL := help
 .NOTPARALLEL:
