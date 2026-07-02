@@ -34,9 +34,4 @@ mmdebstrap \
 	"$DEBIAN_MIRROR" \
 	"deb [signed-by=$BASE_DIR/packages/wmt-os-base/wmt-os.pgp] $WMT_MIRROR trixie main"
 
-log INFO "Allocating swapfile"
-dd if=/dev/zero of="$ROOTFS_DIR/swapfile" bs=1M count=256 conv=fsync status=none
-chmod 600 "$ROOTFS_DIR/swapfile"
-mkswap "$ROOTFS_DIR/swapfile" > /dev/null
-
 log OK "Rootfs ready"

@@ -11,12 +11,12 @@ userpw=wmtuser
 ini=/boot/uboot/setup.ini
 if [ -f "$ini" ]; then
 	val() { awk -F= -v k="$1" '$1==k { sub(/^[^=]*=/, ""); sub(/\r$/, ""); print; exit }' "$ini"; }
-	x=$(val Hostname);     [ -n "$x" ] && hostname=$x
-	x=$(val RootPassword); [ -n "$x" ] && rootpw=$x
-	x=$(val Timezone);     [ -n "$x" ] && timezone=$x
-	x=$(val UserName);     [ -n "$x" ] && username=$x
-	x=$(val UserPassword); [ -n "$x" ] && userpw=$x
-	rm -f "$ini"   # holds plaintext passwords
+	x=$(val Hostname);		[ -n "$x" ] && hostname=$x
+	x=$(val RootPassword);	[ -n "$x" ] && rootpw=$x
+	x=$(val Timezone);		[ -n "$x" ] && timezone=$x
+	x=$(val UserName);		[ -n "$x" ] && username=$x
+	x=$(val UserPassword);	[ -n "$x" ] && userpw=$x
+	rm -f "$ini" # holds plaintext passwords
 fi
 
 echo "$hostname" > /etc/hostname
@@ -40,5 +40,12 @@ done
 
 growpart /dev/mmcblk0 2 || true
 resize2fs /dev/mmcblk0p2 || true
+
+fallocate -l 256M /swapfile
+chmod 600 /swapfile
+mkswap /swapfile > /dev/null
+printf '/swapfile\tnone\t\tswap\tdefaults\t0\t0\n' >> /etc/fstab
+systemctl daemon-reload
+swapon /swapfile
 
 sync

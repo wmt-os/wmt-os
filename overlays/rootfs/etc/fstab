@@ -8,5 +8,4 @@
 # Please run 'systemctl daemon-reload' after making changes here.
 #
 # <file system> <mount point>   <type>  <options>       <dump>  <pass>
-/swapfile	none		swap	defaults	0	0
 /dev/mmcblk0p1	/boot/uboot	vfat	rw,noatime,nofail,umask=0077	0	0
