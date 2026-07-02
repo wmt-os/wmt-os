@@ -6,16 +6,20 @@
 set -eu
 . "$(dirname "$0")/lib.sh"
 
+CONFIG_POOL="https://ftp.debian.org/debian/pool/main/l/linux/"
+CONFIG_PATTERN="linux-config-6.12_.*_armel\.deb$"
+CONFIG_FILE="./usr/src/linux-config-6.12/config.armel_none_rpi.xz"
+
 log INFO "Generating kernel config"
 
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 
 log INFO "Downloading Debian config"
-DEB_URL=$(lynx -dump -listonly -nonumbers "$DEBIAN_CONFIG_POOL" | grep "$DEBIAN_CONFIG_PATTERN" | tail -n 1)
+DEB_URL=$(lynx -dump -listonly -nonumbers "$CONFIG_POOL" | grep "$CONFIG_PATTERN" | tail -n 1)
 [ -n "$DEB_URL" ] || { log ERROR "Failed to find Debian config"; exit 1; }
 wget -q -O "$tmp/config.deb" "$DEB_URL"
-ar p "$tmp/config.deb" data.tar.xz | tar -xOJf - "$DEBIAN_CONFIG_FILE" | unxz > "$tmp/config.debian"
+ar p "$tmp/config.deb" data.tar.xz | tar -xOJf - "$CONFIG_FILE" | unxz > "$tmp/config.debian"
 
 log INFO "Merging config"
 cd "$KERNEL_DIR"
