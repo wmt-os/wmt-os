@@ -8,8 +8,8 @@ set -eu
 
 cd "$KERNEL_DIR"
 
-WMTBOOT_HASH=$(cat "$BASE_DIR"/packages/wmt-boot/* | sha256sum | cut -c1-12)
 STAMP=$(date +%s)
+export STAMP
 
 # Content id: sha256 of HEAD, the dirty tree, .config, and the cross compile flags.
 commit=$(git rev-parse --verify HEAD)
@@ -25,7 +25,6 @@ KERNEL_PKG="linux-image-$RELEASE"
 # Kernel + meta: identity is in the name/Depends, so the deb version is just the stamp
 KERNEL_VERSION="$STAMP"
 META_VERSION="$STAMP"
-WMTBOOT_VERSION="$STAMP+$WMTBOOT_HASH"
 
 export DEBFULLNAME="$BUILDER_NAME" DEBEMAIL="$BUILDER_EMAIL"
 export KBUILD_BUILD_VERSION=1 # deterministic uname -v '#1'
@@ -44,27 +43,7 @@ mv "$BASE_DIR/${KERNEL_PKG}_${KERNEL_VERSION}_"*.deb "$DEBS/"
 rm -f "$BASE_DIR"/linux-headers-*.deb "$BASE_DIR"/linux-libc-dev_*.deb \
 	"$BASE_DIR"/linux-upstream_*.buildinfo "$BASE_DIR"/linux-upstream_*.changes
 
-log INFO "Building wmt-boot ($WMTBOOT_VERSION)"
-staging=$(mktemp -d)
-install -Dm755 "$BASE_DIR/packages/wmt-boot/deploy" "$staging/usr/sbin/wmt-deploy-boot"
-install -Dm755 "$BASE_DIR/packages/wmt-boot/kernel-postinst" "$staging/etc/kernel/postinst.d/zz-wmt-boot"
-install -Dm755 "$BASE_DIR/packages/wmt-boot/kernel-postrm" "$staging/etc/kernel/postrm.d/zz-wmt-boot"
-install -Dm644 "$BASE_DIR/packages/wmt-boot/uboot.cmd" "$staging/usr/share/wmt-boot/uboot.cmd"
-install -Dm755 "$BASE_DIR/packages/wmt-boot/postinst" "$staging/DEBIAN/postinst"
-install -Dm644 "$BASE_DIR/packages/wmt-boot/triggers" "$staging/DEBIAN/triggers"
-cat > "$staging/DEBIAN/control" <<EOF
-Package: wmt-boot
-Version: $WMTBOOT_VERSION
-Architecture: all
-Maintainer: $BUILDER_NAME <$BUILDER_EMAIL>
-Section: kernel
-Priority: optional
-Depends: u-boot-tools
-Description: WonderMedia WM8505 boot integration
- Builds each kernel's U-Boot boot image, keeping the previous one as a rollback.
-EOF
-dpkg-deb --root-owner-group --build "$staging" "$DEBS/wmt-boot_${WMTBOOT_VERSION}_all.deb" >/dev/null
-rm -rf "$staging"
+"$BASE_DIR/packages/wmt-boot/build-deb.sh"
 
 log INFO "Building $PACKAGE_NAME metapackage ($META_VERSION)"
 staging=$(mktemp -d)
