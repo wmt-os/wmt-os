@@ -2,24 +2,32 @@ WMT OS
 ======
 
 FIRST-TIME SETUP
+----------------
+Before its first boot, WMT OS requires a hostname, timezone,
+username, and account passwords.
 
-WMT OS needs a hostname, timezone, username, and account passwords before its
-first boot.
+  [ Windows or Windows CE ]
+  Run setup.cmd, fill out the form, and click Save to generate
+  your setup.ini file.
 
-  Windows or Windows CE:  run setup.cmd, fill in the form, and click Save -- it
-  writes setup.ini to the card for you.
+  [ Linux or macOS ]
+  Open setup.html in a web browser, fill out the form, and
+  click Save. Copy the downloaded setup.ini file to this directory.
 
-  Other systems:  open wmt-os-setup.html in any web browser, fill in the form,
-  and click Save, then copy the downloaded setup.ini next to this file.
+Boot the device and WMT OS will finish the setup automatically.
 
-Boot the device and WMT OS takes it from there.
 
 ROLL BACK A KERNEL
+------------------
+If a kernel update causes issues, you can easily revert to the
+previous kernel.
 
-If a kernel update ever misbehaves, you can boot the previous kernel again. Put
-the card in a Windows or Windows CE machine and run rollback.cmd -- it shows the
-current and previous kernels and switches between them. Reboot to apply; run it
-again to switch back.
+  [ Windows or Windows CE ]
+  Run rollback.cmd.
 
-If the card is ever left without a \script folder (an update interrupted at the
-worst moment), rename script.bak to script and the device will boot again.
+  [ Linux or macOS ]
+  Open a terminal and run:
+    sh /path/to/rollback.sh
+
+The script displays the current and previous kernels and prompts
+you to switch between them. You can re-run the script to switch back.
