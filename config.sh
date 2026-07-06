@@ -7,7 +7,7 @@ export CROSS_COMPILE="arm-linux-gnueabi-"
 export KCFLAGS="-march=armv5te -mtune=arm926ej-s"
 
 export KERNEL_BRANCH="wmt-dev"
-export KERNEL_REPO="https://github.com/lrussell887/linux-wmt.git"
+export KERNEL_REPO="https://github.com/wmt-os/linux-wmt.git"
 
 export BUILDER_NAME="WMT OS Builder"
 export BUILDER_EMAIL="root@wmt-os.org"
