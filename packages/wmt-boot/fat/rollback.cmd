@@ -1,34 +1,38 @@
 @echo off
-REM script is the active boot slot, script.bak the backup; swap them
 cd %0\..
+
 cls
-echo  WMT OS  --  Kernel Rollback
+echo WMT OS Kernel Rollback
 echo.
+
 if not exist script\version goto NOSCRIPT
 if not exist script.bak\version goto NOBACKUP
-echo  Now booting:
+
+echo Current version:
 type script\version
-echo.
-echo  Switch to:
+echo Previous version:
 type script.bak\version
-echo.
-echo  Press a key to switch, or close this window to cancel.
+echo Press a key to switch, or close this window to cancel.
 pause
+
 ren script script.tmp
 ren script.bak script
 ren script.tmp script.bak
 cls
-echo  Done -- the device will next boot:
+echo Done. The device will next boot:
 type script\version
-echo.
-echo  Reboot to apply.  Run this again to switch back.
+echo You may now reboot. Run this again to switch back.
 pause
+
 goto END
+
 :NOSCRIPT
-echo  Cannot find the \script folder -- run this from the card's root.
+echo Cannot find the \script folder. Run this from the card's root.
 pause
 goto END
+
 :NOBACKUP
-echo  Only one kernel is installed -- nothing to roll back to.
+echo Only one kernel is installed. Nothing to roll back to.
 pause
+
 :END
