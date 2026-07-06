@@ -74,4 +74,4 @@ rm -rf "$staging"
 log INFO "Indexing local repository"
 cd "$DEBS"
 dpkg-scanpackages --multiversion . /dev/null | gzip -9c > Packages.gz
-log OK "Local repository ready at $DEBS"
+log OK "Packages ready: $DEBS"

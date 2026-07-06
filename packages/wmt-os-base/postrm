@@ -1,5 +1,5 @@
 #!/bin/sh
-# Put Debian's identity files back when we go away.
+# Restore Debian's identity files when removed
 set -e
 case "$1" in
 remove|abort-install|disappear)

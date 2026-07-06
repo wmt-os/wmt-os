@@ -28,4 +28,4 @@ git config --get user.name >/dev/null || {
 }
 git fetch --no-tags "$UPSTREAM_REPO" "v$UPSTREAM_KERNEL"
 git rebase FETCH_HEAD
-log OK "Rebased to $UPSTREAM_KERNEL"
+log OK "Kernel rebased to $UPSTREAM_KERNEL"

@@ -38,8 +38,8 @@ trap cleanup EXIT
 udevadm settle # wait for the ${LOOP_DEV}pN partition nodes
 
 log INFO "Formatting filesystems"
-mkfs.vfat -F 32 -n BOOT "${LOOP_DEV}p1" >/dev/null
-mkfs.ext4 -q -L rootfs "${LOOP_DEV}p2" >/dev/null
+mkfs.vfat -F 32 -n BOOT "${LOOP_DEV}p1"
+mkfs.ext4 -L rootfs "${LOOP_DEV}p2"
 
 mkdir -p "$MNT_BOOT" "$MNT_ROOTFS"
 mount "${LOOP_DEV}p1" "$MNT_BOOT"
@@ -52,10 +52,12 @@ cp -a "$BUILD_DIR"/rootfs/. "$MNT_ROOTFS/"
 cp -r "$MNT_ROOTFS"/boot/uboot/. "$MNT_BOOT/"
 rm -rf "$MNT_ROOTFS"/boot/uboot/*
 
-log INFO "Unmounting and zeroing free space"
+log INFO "Unmounting filesystems"
 sync
 umount "$MNT_BOOT"
 umount "$MNT_ROOTFS"
+
+log INFO "Zeroing free space"
 zerofree "${LOOP_DEV}p2"
 
 log INFO "Compressing image"

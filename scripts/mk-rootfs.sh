@@ -34,4 +34,4 @@ mmdebstrap \
 	"$DEBIAN_MIRROR" \
 	"deb [signed-by=$BASE_DIR/packages/wmt-os-base/wmt-os.pgp] $WMT_MIRROR trixie main"
 
-log OK "Rootfs ready"
+log OK "Rootfs ready: $ROOTFS_DIR"

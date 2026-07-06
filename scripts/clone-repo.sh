@@ -8,3 +8,4 @@ set -eu
 
 log INFO "Cloning kernel repo ($KERNEL_BRANCH)"
 git clone "$KERNEL_REPO" -b "$KERNEL_BRANCH" "$KERNEL_DIR"
+log OK "Kernel cloned"
