@@ -9,7 +9,7 @@ set -eu
 # The image is named by the meta deb's stamp, so it matches the debs and the splash
 set -- "$BUILD_DIR/debs/${PACKAGE_NAME}_"*_armel.deb
 stamp=${1##*/}; stamp=${stamp#"${PACKAGE_NAME}"_}; stamp=${stamp%%[+_]*}
-BUILD_DATE=$(date -u -d "@$stamp" +%Y%m%d)
+BUILD_DATE=$(date -u -d "@$stamp" +%Y%m%d_%H%M%S)
 
 IMG_FILE="$BUILD_DIR/disk.img"
 IMG_XZ="$BUILD_DIR/wmt-os-$PROFILE-$BUILD_DATE.img.xz"
@@ -61,7 +61,6 @@ log INFO "Zeroing free space"
 zerofree "${LOOP_DEV}p2"
 
 log INFO "Compressing image"
-rm -f "$BUILD_DIR/wmt-os-$PROFILE-"*.img.xz
 pv "$IMG_FILE" | xz -T0 -6 > "$IMG_XZ"
 rm -f "$IMG_FILE"
 
