@@ -1,7 +1,7 @@
 #!/bin/bash
 # Copyright (C) 2026 Logan Russell <me@lrussell.net>
 
-# REQUIRES: bc bison build-essential debhelper dpkg-dev fakeroot flex gcc-arm-linux-gnueabi kmod libssl-dev rsync
+# REQUIRES: bc bison build-essential debhelper dpkg-dev fakeroot flex gcc-arm-linux-gnueabi kmod libc6-dev-armel-cross libssl-dev rsync
 
 set -eu
 . "$(dirname "$0")/lib.sh"
