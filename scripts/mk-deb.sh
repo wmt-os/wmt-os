@@ -32,6 +32,9 @@ DEBS="$BUILD_DIR/debs"
 mkdir -p "$DEBS"
 rm -f "$DEBS"/*.deb "$DEBS"/Packages.gz
 
+# A failed build strands partial bindeb-pkg output in the repo root; remove it
+trap '[ $? -eq 0 ] || rm -f "$BASE_DIR"/linux-*.deb "$BASE_DIR"/linux-upstream_*' EXIT
+
 log INFO "Building $KERNEL_PKG ($KERNEL_VERSION) with bindeb-pkg"
 # -j1: parallel dtbs_install races on install -d. DPKG_FLAGS=-d skips the target-arch
 # build-dep check (cross-building); KBUILD_BUILD_TIMESTAMP bakes STAMP as uname -v's date
