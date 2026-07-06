@@ -62,7 +62,8 @@ zerofree "${LOOP_DEV}p2"
 
 log INFO "Compressing image"
 pv "$IMG_FILE" | xz -T0 -6 > "$IMG_XZ"
+(cd "$BUILD_DIR" && sha256sum "${IMG_XZ##*/}") > "$IMG_XZ.sha256"
 rm -f "$IMG_FILE"
 
-[ -n "${SUDO_UID:-}" ] && chown "$SUDO_UID:$SUDO_GID" "$IMG_XZ"
+[ -n "${SUDO_UID:-}" ] && chown "$SUDO_UID:$SUDO_GID" "$IMG_XZ"*
 log OK "Image ready: $IMG_XZ"
