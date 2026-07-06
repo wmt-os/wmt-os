@@ -1,9 +1,0 @@
-[Unit]
-Description=WLAN GPIO
-
-[Service]
-Type=simple
-ExecStart=/usr/bin/gpioset -c gpiochip0 2=1
-
-[Install]
-WantedBy=multi-user.target
