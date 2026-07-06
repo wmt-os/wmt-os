@@ -1,23 +1,23 @@
-#!/bin/sh
-# Apply /boot/uboot/setup.ini on first boot, with sane fallbacks. Runs once
-# (ConditionFirstBoot); best-effort, so a failing step never blocks the rest.
+#!/bin/bash
+# WMT OS First-Boot Service
+#
+# Applies setup.ini (with sane fallbacks), generates SSH keys,
+# grows the rootfs, and makes a swap file.
+#
+# Copyright (C) 2026 Logan Russell <me@lrussell.net>
 
-hostname=wm8505
-rootpw=root
-timezone=UTC
-username=wmtuser
-userpw=wmtuser
-
+declare -A cfg
 ini=/boot/uboot/setup.ini
 if [ -f "$ini" ]; then
-	val() { awk -F= -v k="$1" '$1==k { sub(/^[^=]*=/, ""); sub(/\r$/, ""); print; exit }' "$ini"; }
-	x=$(val Hostname);		[ -n "$x" ] && hostname=$x
-	x=$(val RootPassword);	[ -n "$x" ] && rootpw=$x
-	x=$(val Timezone);		[ -n "$x" ] && timezone=$x
-	x=$(val UserName);		[ -n "$x" ] && username=$x
-	x=$(val UserPassword);	[ -n "$x" ] && userpw=$x
+	while IFS='=' read -r k v || [[ $k ]]; do [[ $k ]] && cfg[$k]=${v%$'\r'}; done < "$ini"
 	rm -f "$ini" # holds plaintext passwords
 fi
+
+hostname=${cfg[Hostname]:-wmt-os}
+rootpw=${cfg[RootPassword]:-root}
+timezone=${cfg[Timezone]:-UTC}
+username=${cfg[UserName]:-wmt-user}
+userpw=${cfg[UserPassword]:-wmt-user}
 
 echo "$hostname" > /etc/hostname
 hostname "$hostname"
@@ -35,17 +35,17 @@ echo "$username:$userpw" | chpasswd
 
 for t in rsa ecdsa ed25519; do
 	key="/etc/dropbear/dropbear_${t}_host_key"
-	[ -f "$key" ] || dropbearkey -t "$t" -f "$key" >/dev/null 2>&1
+	[ -f "$key" ] || dropbearkey -t "$t" -f "$key"
 done
 
-growpart /dev/mmcblk0 2 || true
-resize2fs /dev/mmcblk0p2 || true
+growpart /dev/mmcblk0 2
+resize2fs /dev/mmcblk0p2
 
 fallocate -l 256M /swapfile
 chmod 600 /swapfile
-mkswap /swapfile > /dev/null
+mkswap /swapfile
 printf '/swapfile\tnone\t\tswap\tdefaults\t0\t0\n' >> /etc/fstab
 systemctl daemon-reload
-swapon /swapfile
+swapon -a
 
 sync

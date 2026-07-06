@@ -10,8 +10,11 @@ Conflicts=shutdown.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
+Nice=-20
 ExecStart=/usr/local/sbin/wmt-firstboot
 TimeoutSec=infinity
+StandardOutput=null
+StandardError=null
 
 [Install]
 WantedBy=sysinit.target
