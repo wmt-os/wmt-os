@@ -35,11 +35,13 @@ rm -f "$DEBS"/*.deb "$DEBS"/Packages.gz
 # A failed build strands partial bindeb-pkg output in the repo root; remove it
 trap '[ $? -eq 0 ] || rm -f "$BASE_DIR"/linux-*.deb "$BASE_DIR"/linux-upstream_*' EXIT
 
-log INFO "Building $KERNEL_PKG ($KERNEL_VERSION) with bindeb-pkg"
-# -j1: parallel dtbs_install races on install -d. DPKG_FLAGS=-d skips the target-arch
-# build-dep check (cross-building); KBUILD_BUILD_TIMESTAMP bakes STAMP as uname -v's date
+log INFO "Building $KERNEL_PKG ($KERNEL_VERSION)"
+BUILD_TS=$(LC_ALL=C date -d @$STAMP) # baked in as uname -v's date
+# Compile in parallel, then package serially: kbuild install targets race under -j.
+# DPKG_FLAGS=-d skips the target-arch build-dep check (cross-building)
+make -j"$(nproc)" LOCALVERSION=-$ID KBUILD_BUILD_TIMESTAMP="$BUILD_TS"
 make -j1 bindeb-pkg KBUILD_DEBARCH=armel KDEB_PKGVERSION="$KERNEL_VERSION" LOCALVERSION=-$ID \
-	KBUILD_BUILD_TIMESTAMP="$(LC_ALL=C date -d @$STAMP)" DPKG_FLAGS=-d
+	KBUILD_BUILD_TIMESTAMP="$BUILD_TS" DPKG_FLAGS=-d
 # Keep only the image deb; discard the headers/libc-dev/changes/buildinfo beside it
 mv "$BASE_DIR/${KERNEL_PKG}_${KERNEL_VERSION}_"*.deb "$DEBS/"
 rm -f "$BASE_DIR"/linux-headers-*.deb "$BASE_DIR"/linux-libc-dev_*.deb \
