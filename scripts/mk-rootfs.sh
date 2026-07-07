@@ -6,6 +6,8 @@
 set -eu
 . "$(dirname "$0")/lib.sh"
 
+case $PROFILE in standard|desktop) ;; *) log ERROR "Unknown profile: $PROFILE"; exit 1 ;; esac
+
 log INFO "Bootstrapping rootfs ($PROFILE)"
 
 ROOTFS_DIR="$BUILD_DIR/rootfs"
