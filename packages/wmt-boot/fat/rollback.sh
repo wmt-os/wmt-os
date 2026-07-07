@@ -16,17 +16,20 @@ fi
 
 echo "Current version:"
 cat script/version
+echo
 echo "Previous version:"
 cat script.bak/version
+echo
 printf 'Press Enter to switch, or Ctrl-C to cancel. '
 read -r _
+echo
 
 rm -rf script.tmp
 mv script script.tmp
 mv script.bak script
 mv script.tmp script.bak
 sync
-
 echo "Done. The device will next boot:"
 cat script/version
+echo
 echo "You may now reboot. Run this again to switch back."

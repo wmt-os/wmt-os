@@ -10,17 +10,20 @@ if not exist script.bak\version goto NOBACKUP
 
 echo Current version:
 type script\version
+echo.
 echo Previous version:
 type script.bak\version
+echo.
 echo Press a key to switch, or close this window to cancel.
 pause
+echo.
 
 ren script script.tmp
 ren script.bak script
 ren script.tmp script.bak
-cls
 echo Done. The device will next boot:
 type script\version
+echo.
 echo You may now reboot. Run this again to switch back.
 pause
 
