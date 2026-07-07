@@ -6,10 +6,9 @@
 set -eu
 . "$(dirname "$0")/lib.sh"
 
-# The image is named by the meta deb's stamp, so it matches the debs and the splash
-set -- "$BUILD_DIR/debs/${PACKAGE_NAME}_"*_armel.deb
-stamp=${1##*/}; stamp=${stamp#"${PACKAGE_NAME}"_}; stamp=${stamp%%[+_]*}
-BUILD_DATE=$(date -u -d "@$stamp" +%Y%m%d_%H%M%S)
+# The image is named by the kernel deb's stamp, so it matches the debs and the splash
+set -- "$BUILD_DIR/debs/linux-image-"[0-9]*_armel.deb
+BUILD_DATE=$(date -u -d "@$(dpkg-deb -f "$1" Version)" +%Y%m%d_%H%M%S)
 
 IMG_FILE="$BUILD_DIR/disk.img"
 IMG_XZ="$BUILD_DIR/wmt-os-$PROFILE-$BUILD_DATE.img.xz"
