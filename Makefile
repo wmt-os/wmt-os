@@ -8,7 +8,7 @@ PROFILE ?= standard
 
 # Source ./config.sh so the kernel build inherits ARCH/CROSS_COMPILE/KCFLAGS;
 # kernel-id.sh aligns LOCALVERSION and the baked timestamp with mk-deb's builds
-KMAKE := . ./config.sh && $(MAKE) -C linux-wmt -j$(NPROC) \
+KMAKE := . ./config.sh && nice -n "$$NICE" $(MAKE) -C linux-wmt -j$(NPROC) \
 	LOCALVERSION=-$$(scripts/kernel-id.sh) KBUILD_BUILD_TIMESTAMP="$$(scripts/kernel-id.sh stamp)"
 
 .DEFAULT_GOAL := help

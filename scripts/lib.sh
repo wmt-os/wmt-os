@@ -6,6 +6,8 @@ export KERNEL_DIR="$BASE_DIR/linux-wmt"
 export BUILD_DIR="$BASE_DIR/build"
 . "$BASE_DIR/config.sh"
 
+renice "$NICE" -p $$ >/dev/null 2>&1 || true
+
 log() {
 	local level=$1
 	shift

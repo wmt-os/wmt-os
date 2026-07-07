@@ -2,10 +2,12 @@
 #
 # Copyright (C) 2026 Logan Russell <me@lrussell.net>
 
+export NICE="${NICE:-19}" # Niceness value
+
 export ARCH="arm"
 export CROSS_COMPILE="arm-linux-gnueabi-"
 export KCFLAGS="-march=armv5te -mtune=arm926ej-s"
-export KBUILD_BUILD_VERSION=1 # deterministic uname -v '#1'
+export KBUILD_BUILD_VERSION=1 # Deterministic uname -v '#1'
 
 export KERNEL_BRANCH="wmt-dev"
 export KERNEL_REPO="https://github.com/wmt-os/linux-wmt.git"
@@ -24,5 +26,4 @@ export WMT_MIRROR="https://apt.wmt-os.org"
 export EXTRA_PACKAGES="cloud-guest-utils debian-archive-keyring dropbear fastfetch firmware-mediatek htop network-manager rsync screen sudo wireless-regdb wpasupplicant"
 export DESKTOP_PACKAGES="alsa-utils dbus-user-session dillo gogglesmm icewm polkitd rxvt-unicode xdm xfe xorg xserver-xorg-video-wmt"
 
-# Image profile: standard | desktop
-export PROFILE="${PROFILE:-standard}"
+export PROFILE="${PROFILE:-standard}" # Image profile: standard | desktop
