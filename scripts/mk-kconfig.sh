@@ -24,12 +24,15 @@ ar p "$tmp/config.deb" data.tar.xz | tar -xOJf - "$CONFIG_FILE" | unxz > "$tmp/c
 log INFO "Merging config"
 cd "$KERNEL_DIR"
 # Snapshot the seed's enabled options after dependency resolution, to re-assert below
-cp "$BASE_DIR/kernel-seed.config" .config
-make olddefconfig
-grep -E '=(y|m)$' .config > "$tmp/seed.defconfig"
+cp "$BASE_DIR/kernel-seed.config" "$tmp/.config"
+make KCONFIG_CONFIG="$tmp/.config" olddefconfig
+grep -E '=(y|m)$' "$tmp/.config" > "$tmp/seed.defconfig"
 
 # Merge the Debian base under the seed, re-assert the snapshot, then finalize
-scripts/kconfig/merge_config.sh -m "$tmp/config.debian" "$BASE_DIR/kernel-seed.config" "$tmp/seed.defconfig"
-make olddefconfig
+scripts/kconfig/merge_config.sh -m -O "$tmp" "$tmp/config.debian" "$BASE_DIR/kernel-seed.config" "$tmp/seed.defconfig"
+make KCONFIG_CONFIG="$tmp/.config" olddefconfig
+
+# Replace existing config only on real changes
+cmp -s "$tmp/.config" .config || mv "$tmp/.config" .config
 
 log OK "Config ready"
