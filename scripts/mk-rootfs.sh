@@ -10,8 +10,8 @@ case $PROFILE in standard|desktop) ;; *) log ERROR "Unknown profile: $PROFILE"; 
 
 log INFO "Bootstrapping rootfs ($PROFILE)"
 
-ROOTFS_DIR="$BUILD_DIR/rootfs"
-rm -rf "$ROOTFS_DIR"
+ROOTFS_DIR="$BUILD_DIR/rootfs-$PROFILE"
+rm -rf "$ROOTFS_DIR" "$ROOTFS_DIR.tmp"
 
 PACKAGES="$EXTRA_PACKAGES $PACKAGE_NAME wmt-os-base"
 [ "$PROFILE" = desktop ] && PACKAGES="$PACKAGES $DESKTOP_PACKAGES"
@@ -31,9 +31,10 @@ mmdebstrap \
 	--customize-hook='chroot "$1" /bin/sh < bootstrap/hooks.sh' \
 	--customize-hook='rm -f "$1"/etc/apt/sources.list "$1"/etc/apt/preferences.d/apt-build.pref; cp -r bootstrap/sources/. "$1"/etc/apt/' \
 	trixie \
-	"$ROOTFS_DIR" \
+	"$ROOTFS_DIR.tmp" \
 	"deb [trusted=yes] copy://$BUILD_DIR/debs ./" \
 	"$DEBIAN_MIRROR" \
 	"deb [signed-by=$BASE_DIR/packages/wmt-os-base/wmt-os.pgp] $WMT_MIRROR trixie main"
 
+mv "$ROOTFS_DIR.tmp" "$ROOTFS_DIR"
 log OK "Rootfs ready: $ROOTFS_DIR"

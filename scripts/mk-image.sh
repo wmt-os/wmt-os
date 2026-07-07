@@ -45,7 +45,7 @@ mount "${LOOP_DEV}p1" "$MNT_BOOT"
 mount "${LOOP_DEV}p2" "$MNT_ROOTFS"
 
 log INFO "Populating filesystems"
-cp -a "$BUILD_DIR"/rootfs/. "$MNT_ROOTFS/"
+cp -a "$BUILD_DIR/rootfs-$PROFILE"/. "$MNT_ROOTFS/"
 
 # Move the package-staged boot files onto the boot partition
 cp -r "$MNT_ROOTFS"/boot/uboot/. "$MNT_BOOT/"

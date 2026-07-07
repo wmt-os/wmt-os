@@ -65,13 +65,12 @@ build/debs/Packages.gz: linux-wmt/arch/arm/boot/zImage linux-wmt/modules.order $
 
 # ---- Image ----
 
-rootfs: build/.rootfs-$(PROFILE)-stamp  ## Bootstrap the root filesystem
-build/.rootfs-$(PROFILE)-stamp: build/debs/Packages.gz config.sh $(shell find overlays/rootfs bootstrap -type f)
+rootfs: build/rootfs-$(PROFILE)  ## Bootstrap the root filesystem
+build/rootfs-$(PROFILE): build/debs/Packages.gz config.sh $(shell find overlays/rootfs bootstrap -type f)
 	@sudo PROFILE=$(PROFILE) scripts/mk-rootfs.sh
-	@touch build/.rootfs-$(PROFILE)-stamp
 
 image: build/.image-$(PROFILE)-stamp  ## Build the disk image
-build/.image-$(PROFILE)-stamp: build/.rootfs-$(PROFILE)-stamp
+build/.image-$(PROFILE)-stamp: build/rootfs-$(PROFILE)
 	@sudo PROFILE=$(PROFILE) scripts/mk-image.sh
 	@touch build/.image-$(PROFILE)-stamp
 
