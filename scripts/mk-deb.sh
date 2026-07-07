@@ -11,12 +11,7 @@ cd "$KERNEL_DIR"
 STAMP=$(date +%s)
 export STAMP
 
-# Content id: sha256 of HEAD, the dirty diff, .config, and the cross compile flags;
-# a dirty tree marks the id, and the publisher refuses dirty builds
-commit=$(git rev-parse --verify HEAD)
-git --no-optional-locks diff --quiet HEAD && dirty= || dirty=-dirty
-ID=$({ printf '%s\n' "$commit"; git --no-optional-locks diff HEAD; cat .config; \
-	printf '%s\n' "$ARCH" "$CROSS_COMPILE" "$KCFLAGS"; } | sha256sum | cut -c1-12)$dirty
+ID=$("$BASE_DIR/scripts/kernel-id.sh")
 
 # The id is appended to the release, so distinct kernels co-install under their own /lib/modules
 RELEASE=$(make -s kernelrelease LOCALVERSION=-$ID)
@@ -26,7 +21,6 @@ KERNEL_PKG="linux-image-$RELEASE"
 KERNEL_VERSION="$STAMP"
 
 export DEBFULLNAME="$BUILDER_NAME" DEBEMAIL="$BUILDER_EMAIL"
-export KBUILD_BUILD_VERSION=1 # deterministic uname -v '#1'
 
 DEBS="$BUILD_DIR/debs"
 mkdir -p "$DEBS"
