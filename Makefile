@@ -23,7 +23,7 @@ all: standard desktop  ## Build both disk images (standard + desktop)
 # ---- Host dependencies ----
 
 deps:  ## Install host build dependencies
-	@sudo scripts/install-deps.sh
+	@sudo NICE=$(NICE) scripts/install-deps.sh
 
 # ---- Kernel repository ----
 
@@ -67,11 +67,11 @@ build/debs/Packages.gz: linux-wmt/arch/arm/boot/zImage linux-wmt/modules.order $
 
 rootfs: build/rootfs-$(PROFILE)  ## Bootstrap the root filesystem
 build/rootfs-$(PROFILE): build/debs/Packages.gz config.sh $(shell find overlays/rootfs bootstrap -type f)
-	@sudo PROFILE=$(PROFILE) scripts/mk-rootfs.sh
+	@sudo PROFILE=$(PROFILE) NICE=$(NICE) scripts/mk-rootfs.sh
 
 image: build/.image-$(PROFILE)-stamp  ## Build the disk image
 build/.image-$(PROFILE)-stamp: build/rootfs-$(PROFILE)
-	@sudo PROFILE=$(PROFILE) scripts/mk-image.sh
+	@sudo PROFILE=$(PROFILE) NICE=$(NICE) XZ_LEVEL=$(XZ_LEVEL) scripts/mk-image.sh
 	@touch build/.image-$(PROFILE)-stamp
 
 standard:  ## Build the standard (default) disk image

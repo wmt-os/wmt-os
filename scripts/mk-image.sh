@@ -60,7 +60,7 @@ log INFO "Zeroing free space"
 zerofree "${LOOP_DEV}p2"
 
 log INFO "Compressing image"
-pv "$IMG_FILE" | xz -T0 -6 > "$IMG_XZ"
+pv "$IMG_FILE" | xz -T0 -"$XZ_LEVEL" > "$IMG_XZ"
 (cd "$BUILD_DIR" && sha256sum "${IMG_XZ##*/}") > "$IMG_XZ.sha256"
 rm -f "$IMG_FILE"
 

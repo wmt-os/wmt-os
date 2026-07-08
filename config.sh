@@ -23,3 +23,4 @@ export EXTRA_PACKAGES="cloud-guest-utils debian-archive-keyring dropbear fastfet
 export DESKTOP_PACKAGES="alsa-utils dbus-user-session dillo gogglesmm icewm polkitd rxvt-unicode xdm xfe xorg xserver-xorg-video-wmt"
 
 export PROFILE="${PROFILE:-standard}" # Image profile: standard | desktop
+export XZ_LEVEL="${XZ_LEVEL:-9}" # Image compression level: xz 0-9[e]
