@@ -13,7 +13,10 @@ log INFO "Bootstrapping rootfs ($PROFILE)"
 ROOTFS_DIR="$BUILD_DIR/rootfs-$PROFILE"
 rm -rf "$ROOTFS_DIR" "$ROOTFS_DIR.tmp"
 
-PACKAGES="$EXTRA_PACKAGES $PACKAGE_NAME wmt-os-base"
+# Derive the metapackage name from the kernel release
+KERNEL_META="linux-image-$(make -s -C "$KERNEL_DIR" kernelrelease LOCALVERSION= | cut -d- -f2-)"
+
+PACKAGES="$EXTRA_PACKAGES $KERNEL_META wmt-os-base"
 [ "$PROFILE" = desktop ] && PACKAGES="$PACKAGES $DESKTOP_PACKAGES"
 
 cd "$BASE_DIR"

@@ -13,9 +13,11 @@ export STAMP
 
 ID=$("$BASE_DIR/scripts/kernel-id.sh")
 
-# The id is appended to the release, so distinct kernels co-install under their own /lib/modules
-RELEASE=$(make -s kernelrelease LOCALVERSION=-$ID)
-KERNEL_PKG="linux-image-$RELEASE"
+# Append the id to the release to give each kernel a unique identity
+KERNEL_PKG="linux-image-$(make -s kernelrelease LOCALVERSION=-$ID)"
+
+# Drop the version from the release to name the metapackage
+KERNEL_META="linux-image-$(make -s kernelrelease LOCALVERSION= | cut -d- -f2-)"
 
 # Stamp is apt's upgrade counter; the kernel's identity is already in the name
 KERNEL_VERSION="$STAMP"
@@ -31,11 +33,13 @@ trap '[ $? -eq 0 ] || rm -f "$BASE_DIR"/linux-*.deb "$BASE_DIR"/linux-upstream_*
 
 log INFO "Building $KERNEL_PKG ($KERNEL_VERSION)"
 BUILD_TS=$(LC_ALL=C date -d @$STAMP) # baked in as uname -v's date
-# Compile in parallel, then package serially: kbuild install targets race under -j.
+
+# Compile in parallel, then package serially: kbuild install targets race under -j
 # DPKG_FLAGS=-d skips the target-arch build-dep check (cross-building)
 make -j"$(nproc)" LOCALVERSION=-$ID KBUILD_BUILD_TIMESTAMP="$BUILD_TS"
 make -j1 bindeb-pkg KBUILD_DEBARCH=armel KDEB_PKGVERSION="$KERNEL_VERSION" LOCALVERSION=-$ID \
 	KBUILD_BUILD_TIMESTAMP="$BUILD_TS" DPKG_FLAGS=-d
+
 # Keep only the image deb; discard the headers/libc-dev/changes/buildinfo beside it
 mv "$BASE_DIR/${KERNEL_PKG}_${KERNEL_VERSION}_"*.deb "$DEBS/"
 rm -f "$BASE_DIR"/linux-headers-*.deb "$BASE_DIR"/linux-libc-dev_*.deb \
@@ -46,7 +50,7 @@ rm -f "$BASE_DIR"/linux-headers-*.deb "$BASE_DIR"/linux-libc-dev_*.deb \
 
 # The meta's key is its control hash, so it changes exactly when its kernel does
 meta_control=$(cat <<EOF
-Package: $PACKAGE_NAME
+Package: $KERNEL_META
 Architecture: armel
 Maintainer: $BUILDER_NAME <$BUILDER_EMAIL>
 Section: kernel
@@ -58,11 +62,11 @@ EOF
 )
 META_VERSION="$STAMP+$(printf '%s\n' "$meta_control" | sha256sum | cut -c1-12)"
 
-log INFO "Building $PACKAGE_NAME metapackage ($META_VERSION)"
+log INFO "Building $KERNEL_META metapackage ($META_VERSION)"
 staging=$(mktemp -d)
 mkdir -p "$staging/DEBIAN"
 printf '%s\nVersion: %s\n' "$meta_control" "$META_VERSION" > "$staging/DEBIAN/control"
-dpkg-deb --root-owner-group --build "$staging" "$DEBS/${PACKAGE_NAME}_${META_VERSION}_armel.deb" >/dev/null
+dpkg-deb --root-owner-group --build "$staging" "$DEBS/${KERNEL_META}_${META_VERSION}_armel.deb" >/dev/null
 rm -rf "$staging"
 
 log INFO "Indexing local repository"
