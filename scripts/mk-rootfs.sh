@@ -18,23 +18,21 @@ PACKAGES="$EXTRA_PACKAGES $PACKAGE_NAME wmt-os-base"
 
 cd "$BASE_DIR"
 
-# Resolve against the local debs, Debian, and the live archive; apt-build.pref
-# orders them (local > archive > Debian) until the real sources land. Bootstrap
-# apt runs host-side, so signed-by names the in-tree keyring
+# The device's own sources are placed ahead of the update, so bootstrap and
+# device resolve identically; apt-build.pref orders them local > archive >
+# Debian. sources.list carries only the local repo and is removed once done
 mmdebstrap \
 	--variant=standard \
 	--include="${PACKAGES// /,}" \
 	--architectures=armel \
-	--components="$DEBIAN_COMPONENTS" \
 	--setup-hook='cp -r overlays/rootfs/. "$1"/' \
 	--setup-hook='install -Dm644 bootstrap/apt-build.pref "$1"/etc/apt/preferences.d/apt-build.pref' \
+	--setup-hook='install -Dm644 packages/wmt-os-base/wmt.sources "$1"/etc/apt/sources.list.d/wmt.sources' \
 	--customize-hook='chroot "$1" /bin/sh < bootstrap/hooks.sh' \
-	--customize-hook='rm -f "$1"/etc/apt/sources.list "$1"/etc/apt/preferences.d/apt-build.pref; cp -r bootstrap/sources/. "$1"/etc/apt/' \
+	--customize-hook='rm -f "$1"/etc/apt/sources.list "$1"/etc/apt/preferences.d/apt-build.pref' \
 	trixie \
 	"$ROOTFS_DIR.tmp" \
-	"deb [trusted=yes] copy://$BUILD_DIR/debs ./" \
-	"$DEBIAN_MIRROR" \
-	"deb [signed-by=$BASE_DIR/packages/wmt-os-base/wmt-os.pgp] $WMT_MIRROR trixie main"
+	"deb [trusted=yes] copy://$BUILD_DIR/debs ./"
 
 mv "$ROOTFS_DIR.tmp" "$ROOTFS_DIR"
 log OK "Rootfs ready: $ROOTFS_DIR"

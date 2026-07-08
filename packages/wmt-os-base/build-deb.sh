@@ -13,14 +13,13 @@ VERSION="$STAMP+$HASH"
 log INFO "Building wmt-os-base ($VERSION)"
 mkdir -p "$DEBS"
 staging=$(mktemp -d)
-install -Dm644 "$SRC/wmt-os.pgp" "$staging/etc/apt/keyrings/wmt-os.pgp"
 install -Dm644 "$SRC/wmt.sources" "$staging/etc/apt/sources.list.d/wmt.sources"
 install -Dm644 "$SRC/wmt-os.pref" "$staging/etc/apt/preferences.d/wmt-os.pref"
 install -Dm755 "$SRC/preinst" "$staging/DEBIAN/preinst"
 install -Dm755 "$SRC/postinst" "$staging/DEBIAN/postinst"
 install -Dm755 "$SRC/postrm" "$staging/DEBIAN/postrm"
 install -Dm644 "$SRC/triggers" "$staging/DEBIAN/triggers"
-printf '%s\n' /etc/apt/keyrings/wmt-os.pgp /etc/apt/sources.list.d/wmt.sources \
+printf '%s\n' /etc/apt/sources.list.d/wmt.sources \
 	/etc/apt/preferences.d/wmt-os.pref > "$staging/DEBIAN/conffiles"
 cat > "$staging/DEBIAN/control" <<EOF
 Package: wmt-os-base

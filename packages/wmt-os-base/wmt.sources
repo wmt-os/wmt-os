@@ -3,4 +3,32 @@ URIs: https://apt.wmt-os.org/
 Suites: trixie
 Components: main
 Architectures: armel
-Signed-By: /etc/apt/keyrings/wmt-os.pgp
+Signed-By:
+ -----BEGIN PGP PUBLIC KEY BLOCK-----
+ .
+ mQINBGpF3uoBEACUoTb/knYBWnJu6PI4dYXxrf1sWPTIybe7bwjGLMFKzv8ZZXgt
+ X0Bp+EVcCgZvr1VlJHX9R3ZdMK1FRxecIeDfxJa+hVm6UFMB8KlcnIHR705t7+yJ
+ V00O9v5xnTDIP6m197kk51RqTBDzCFRUTbsiN+5LgAmXe8Lij+ot7HWw3a6l5nws
+ mic0SKdS9Eq7xKYFgoule1A6/UGRH9Fzfk+dPEa1sWFN+CVvd8Xafl49OFU4RqCi
+ OSrb1DMdqlv8n0cX9lWxxKclxQ7TY9m+E7fh5Y9KvdQC/7Qoid6YPxuGlg2K7oHN
+ W+KbXP0JGz2RKkffQPQKHCzy8xfqEaitkmZhpt+HXyg4hF4I4qeRv/5AnRrOtsnx
+ NE1wMfIGa6USZXrSlvBGQLGBnOO+XfhTtWSewjogbzKX2a/YLN1ndtp3+vGB7D5H
+ lSuG8eFq3OFJIUtpGFLBWYTH8sk3ZzHjtp3giJMTs94xQcoqGigclX5+6omdT8k1
+ FeRHli7dHmUZyAJYI56jkHQgXitpVeq4fHUggAEBbcERyNTtRZpoNQFlRUnurJIc
+ 6JVDG3gvi5icMN1XcicV5qdcMtuUGzmiDYcnsweGdGJpAdocB91WyIjPOhJDijLh
+ FyiearFCN0ACvvowccfHaVVRlp1a/+QWtlzz0RO0fZz/mgyGHw6qXBigCwARAQAB
+ tBhXTVQgT1MgPHJvb3RAd210LW9zLm9yZz6JAk4EEwEKADgWIQSV5jbu8VKKs1wc
+ A/fIirIIl8w2UwUCakXe6gIbAwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgAAKCRDI
+ irIIl8w2U0hID/4qOKK3kyFBk2BSO99bSPO0XCbxRfAgQOwgbq9KKbi2kmuRc434
+ WoOiKMAFfdCIIg1Vt/iU9G1gLmYLrfi0TQK9YCePzxyxHb20ZlIzlk2+Tpw5C9IH
+ MuRCHprgdxr2cclpGr9AnFz2mPAz+UPKR7Ta7BjT/tZ05YX3UshONx1QdqVeDODo
+ ZH2zjvZachzVLeNdV8iMcqgAd5toyaS6/hwkjleCRo++P9d4Jh/MZCLB+rDogAhx
+ xLL4YyY6UlipiGVtvKDuC5/OzWkt2a80sk8L1kSqGAZmTHwNabtNL3/UhXCmolTK
+ 7dZztSC/9LN7fo7jGpyrE5ZT1WubVQuV1kpxTDTciCyd+S3sJc8hGLy0yQLn+hDo
+ Byofo/N08Ts677fe5Ojbv4ZKyVC/buFZExEom68FihuLjsOmVr/nZsfeGeV1K8V1
+ jZeYn/SrLb8bKo1x7kOmQtQjBRNJposs7v7THELnLichymegp4HIAXjqG0u2kIdd
+ /hRppzSTutantQEHlnp3t1wlFKfHtpvzll41gZxLKs90KjmVasLOaOPN+DwU1P52
+ 2LB+LKYD7gHHAFRNmLgDsTurdbkvOro2f5JfE+6QE3diYu+EXHU/Rz9PhLoL0KOf
+ 2tn5rgeRSie89benMYuz4sBCzt5bemI1M1vgQMU2oOuf/iKlrvtI5V9uxg==
+ =+fUY
+ -----END PGP PUBLIC KEY BLOCK-----

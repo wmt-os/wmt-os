@@ -19,10 +19,6 @@ export BUILDER_EMAIL="root@wmt-os.org"
 export KERNEL_FLAVOR="wm8505"
 export PACKAGE_NAME="linux-image-$KERNEL_FLAVOR"
 
-# Debian source for the build; the device's ships in bootstrap/sources/debian.sources
-export DEBIAN_MIRROR="https://deb.debian.org/debian"
-export DEBIAN_COMPONENTS="main non-free-firmware"
-export WMT_MIRROR="https://apt.wmt-os.org"
 export EXTRA_PACKAGES="cloud-guest-utils debian-archive-keyring dropbear fastfetch firmware-mediatek htop network-manager rsync screen sudo wireless-regdb wpasupplicant"
 export DESKTOP_PACKAGES="alsa-utils dbus-user-session dillo gogglesmm icewm polkitd rxvt-unicode xdm xfe xorg xserver-xorg-video-wmt"
 
