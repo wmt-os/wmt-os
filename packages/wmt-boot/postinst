@@ -1,6 +1,21 @@
 #!/bin/sh
 set -e
 boot=/boot/uboot
+
+# Fill the setup's timezone list from the system's zoneinfo
+refresh_timezones() {
+	awk -F'\t' '/^[A-Z]/ {print $3}' /usr/share/zoneinfo/zone.tab | LC_ALL=C sort | awk '
+		NR == FNR { zone[++n] = $0; next }
+		/<!-- tzdata -->/ {
+			indent = $0
+			sub(/[^ \t].*/, "", indent)
+			for (i = 1; i <= n; i++)
+				printf "%s<option value=\"%s\">%s</option>\n", indent, zone[i], zone[i]
+		}
+		{ print }
+	' - /usr/share/wmt-boot/fat/setup-web.html > "$boot"/setup-web.html
+}
+
 case "$1" in
 configure)
 	# Keep the card's user-facing files current with the package
@@ -10,6 +25,7 @@ configure)
 	fi
 	mkdir -p "$boot"
 	cp -r /usr/share/wmt-boot/fat/. "$boot"/
+	refresh_timezones
 	sync
 	# Activate via trigger (not a direct deploy) so this dedups with the kernel hook in one transaction
 	dpkg-trigger --no-await wmt-deploy-boot
