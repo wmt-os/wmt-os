@@ -1,13 +1,12 @@
 #!/bin/bash
 # Copyright (C) 2026 Logan Russell <me@lrussell.net>
 
-# REQUIRES: bison build-essential flex gcc-arm-linux-gnueabi lynx wget
+# REQUIRES: bison build-essential debian-archive-keyring devscripts flex gcc-arm-linux-gnueabi
 
 set -eu
 . "$(dirname "$0")/lib.sh"
 
-CONFIG_POOL="https://ftp.debian.org/debian/pool/main/l/linux/"
-CONFIG_PATTERN="linux-config-6.12_.*_armel\.deb$"
+CONFIG_PKG="linux-config-6.12"
 CONFIG_FILE="./usr/src/linux-config-6.12/config.armel_none_rpi.xz"
 
 log INFO "Generating kernel config"
@@ -16,10 +15,13 @@ tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 
 log INFO "Downloading Debian config"
-DEB_URL=$(lynx -dump -listonly -nonumbers "$CONFIG_POOL" | grep "$CONFIG_PATTERN" | tail -n 1)
-[ -n "$DEB_URL" ] || { log ERROR "Failed to find Debian config"; exit 1; }
-wget -q -O "$tmp/config.deb" "$DEB_URL"
-ar p "$tmp/config.deb" data.tar.xz | tar -xOJf - "$CONFIG_FILE" | unxz > "$tmp/config.debian"
+# chdist fetches the newest revision against Packages-only sources derived from the overlay's own
+chdist -d "$tmp" -a armel create debian > /dev/null
+awk -v RS= -v ORS='\n\n' '{sub(/Components:[^\n]*/, "Components: main"); print $0 "\nTargets: Packages"}' \
+	"$BASE_DIR/overlays/rootfs/etc/apt/sources.list.d/debian.sources" > "$tmp/debian/etc/apt/sources.list.d/debian.sources"
+chdist -d "$tmp" apt-get debian -qq update
+(cd "$tmp" && chdist -d "$tmp" apt-get debian -qq download "$CONFIG_PKG")
+dpkg-deb --fsys-tarfile "$tmp/$CONFIG_PKG"_*_armel.deb | tar -xOf - "$CONFIG_FILE" | unxz > "$tmp/config.debian"
 
 log INFO "Merging config"
 cd "$KERNEL_DIR"
