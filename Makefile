@@ -71,7 +71,7 @@ build/rootfs-$(PROFILE): build/debs/Packages.gz config.sh $(shell find overlays/
 
 image: build/.image-$(PROFILE)-stamp  ## Build the disk image
 build/.image-$(PROFILE)-stamp: build/rootfs-$(PROFILE)
-	@sudo PROFILE=$(PROFILE) NICE=$(NICE) XZ_LEVEL=$(XZ_LEVEL) scripts/mk-image.sh
+	@sudo PROFILE=$(PROFILE) NICE=$(NICE) XZ_LEVEL=$(XZ_LEVEL) IMG_SIZE=$(IMG_SIZE) scripts/mk-image.sh
 	@touch build/.image-$(PROFILE)-stamp
 
 standard:  ## Build the standard (default) disk image

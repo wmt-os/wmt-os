@@ -26,7 +26,7 @@ cleanup() {
 
 log INFO "Creating disk image"
 rm -f "$IMG_FILE"
-dd if=/dev/zero of="$IMG_FILE" bs=1M count=3500 conv=fsync status=none
+dd if=/dev/zero of="$IMG_FILE" bs=1M count="$IMG_SIZE" conv=fsync status=none
 
 parted "$IMG_FILE" --script mklabel msdos
 parted "$IMG_FILE" --script mkpart primary fat32 1MiB 65MiB

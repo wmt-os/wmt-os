@@ -24,3 +24,4 @@ export DESKTOP_PACKAGES="alsa-utils dbus-user-session dillo gogglesmm icewm polk
 
 export PROFILE="${PROFILE:-standard}" # Image profile: standard | desktop
 export XZ_LEVEL="${XZ_LEVEL:-9}" # Image compression level: xz 0-9[e]
+export IMG_SIZE="${IMG_SIZE:-3500}" # Image size in MB
