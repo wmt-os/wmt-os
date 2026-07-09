@@ -37,7 +37,7 @@ trap cleanup EXIT
 udevadm settle # wait for the ${LOOP_DEV}pN partition nodes
 
 log INFO "Formatting filesystems"
-mkfs.vfat -F 32 -n BOOT "${LOOP_DEV}p1"
+mkfs.vfat -F 16 -n BOOT "${LOOP_DEV}p1"
 mkfs.ext4 -L rootfs "${LOOP_DEV}p2"
 
 mkdir -p "$MNT_BOOT" "$MNT_ROOTFS"
