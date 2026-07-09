@@ -43,9 +43,6 @@ make -j1 bindeb-pkg KBUILD_DEBARCH=armel KDEB_PKGVERSION="$KERNEL_VERSION" LOCAL
 # Keep only the image deb; the exit trap removes the rest
 mv "$BASE_DIR/${KERNEL_PKG}_${KERNEL_VERSION}_"*.deb "$DEBS/"
 
-"$BASE_DIR/packages/wmt-boot/build-deb.sh"
-"$BASE_DIR/packages/wmt-os-base/build-deb.sh"
-
 # The meta's key is its control hash, so it changes exactly when its kernel does
 meta_control=$(cat <<EOF
 Package: $KERNEL_META
@@ -66,6 +63,9 @@ mkdir -p "$staging/DEBIAN"
 printf '%s\nVersion: %s\n' "$meta_control" "$META_VERSION" > "$staging/DEBIAN/control"
 dpkg-deb --root-owner-group --build "$staging" "$DEBS/${KERNEL_META}_${META_VERSION}_armel.deb" >/dev/null
 rm -rf "$staging"
+
+"$BASE_DIR/packages/wmt-boot/build-deb.sh"
+"$BASE_DIR/packages/wmt-os-base/build-deb.sh"
 
 log INFO "Indexing local repository"
 cd "$DEBS"
