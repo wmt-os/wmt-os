@@ -65,7 +65,7 @@ build/debs/Packages.gz: linux-wmt/arch/arm/boot/zImage linux-wmt/modules.order $
 # ---- Image ----
 
 rootfs: build/rootfs-$(PROFILE)  ## Bootstrap the root filesystem
-build/rootfs-$(PROFILE): build/debs/Packages.gz config.sh $(shell find overlays/rootfs bootstrap -type f)
+build/rootfs-$(PROFILE): build/debs/Packages.gz config.sh $(shell find overlays/rootfs* bootstrap -type f)
 	@sudo PROFILE=$(PROFILE) NICE=$(NICE) scripts/mk-rootfs.sh
 
 # Newest image decides freshness

@@ -18,7 +18,7 @@ log INFO "Downloading Debian config"
 # chdist fetches the newest revision against Packages-only sources derived from the overlay's own
 chdist -d "$tmp" -a armel create debian > /dev/null
 awk -v RS= -v ORS='\n\n' '{sub(/Components:[^\n]*/, "Components: main"); print $0 "\nTargets: Packages"}' \
-	"$BASE_DIR/overlays/rootfs/etc/apt/sources.list.d/debian.sources" > "$tmp/debian/etc/apt/sources.list.d/debian.sources"
+	"$BASE_DIR/overlays/rootfs-base/etc/apt/sources.list.d/debian.sources" > "$tmp/debian/etc/apt/sources.list.d/debian.sources"
 chdist -d "$tmp" apt-get debian -qq update
 (cd "$tmp" && chdist -d "$tmp" apt-get debian -qq download "$CONFIG_PKG")
 dpkg-deb --fsys-tarfile "$tmp/$CONFIG_PKG"_*_armel.deb | tar -xOf - "$CONFIG_FILE" | unxz > "$tmp/config.debian"
