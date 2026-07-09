@@ -28,8 +28,8 @@ DEBS="$BUILD_DIR/debs"
 mkdir -p "$DEBS"
 rm -f "$DEBS"/*.deb "$DEBS"/Packages.gz
 
-# A failed build strands partial bindeb-pkg output in the repo root; remove it
-trap '[ $? -eq 0 ] || rm -f "$BASE_DIR"/linux-*.deb "$BASE_DIR"/linux-upstream_*' EXIT
+# Remove the leftover headers/libc-dev/changes/buildinfo from the repo root
+trap 'rm -f "$BASE_DIR"/linux-*.deb "$BASE_DIR"/linux-upstream_*' EXIT
 
 log INFO "Building $KERNEL_PKG ($KERNEL_VERSION)"
 BUILD_TS=$(LC_ALL=C date -d @$STAMP) # baked in as uname -v's date
@@ -40,10 +40,8 @@ make -j"$(nproc)" LOCALVERSION=-$ID KBUILD_BUILD_TIMESTAMP="$BUILD_TS"
 make -j1 bindeb-pkg KBUILD_DEBARCH=armel KDEB_PKGVERSION="$KERNEL_VERSION" LOCALVERSION=-$ID \
 	KBUILD_BUILD_TIMESTAMP="$BUILD_TS" DPKG_FLAGS=-d
 
-# Keep only the image deb; discard the headers/libc-dev/changes/buildinfo beside it
+# Keep only the image deb; the exit trap removes the rest
 mv "$BASE_DIR/${KERNEL_PKG}_${KERNEL_VERSION}_"*.deb "$DEBS/"
-rm -f "$BASE_DIR"/linux-headers-*.deb "$BASE_DIR"/linux-libc-dev_*.deb \
-	"$BASE_DIR"/linux-upstream_*.buildinfo "$BASE_DIR"/linux-upstream_*.changes
 
 "$BASE_DIR/packages/wmt-boot/build-deb.sh"
 "$BASE_DIR/packages/wmt-os-base/build-deb.sh"
