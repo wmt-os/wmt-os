@@ -13,7 +13,7 @@ refresh_timezones() {
 				printf "%s<option value=\"%s\">%s</option>\n", indent, zone[i], zone[i]
 		}
 		{ print }
-	' - /usr/share/wmt-boot/fat/setup-web.html > "$boot"/setup-web.html
+	' - /usr/share/wmt-boot/overlay/setup-web.html > "$boot"/setup-web.html
 }
 
 case "$1" in
@@ -24,7 +24,7 @@ configure)
 		exit 1
 	fi
 	mkdir -p "$boot"
-	cp -r /usr/share/wmt-boot/fat/. "$boot"/
+	cp -r /usr/share/wmt-boot/overlay/. "$boot"/
 	refresh_timezones
 	sync
 	# Activate via trigger (not a direct deploy) so this dedups with the kernel hook in one transaction
