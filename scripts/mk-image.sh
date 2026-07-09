@@ -25,7 +25,7 @@ cleanup() {
 }
 
 log INFO "Creating disk image"
-rm -f "$IMG_FILE"
+rm -f "$IMG_FILE"*
 fallocate -l "${IMG_SIZE}M" "$IMG_FILE"
 
 parted "$IMG_FILE" --script mklabel msdos
@@ -60,7 +60,8 @@ log INFO "Zeroing free space"
 zerofree "${LOOP_DEV}p2"
 
 log INFO "Compressing image"
-pv "$IMG_FILE" | xz -T0 -"$XZ_LEVEL" > "$IMG_XZ"
+pv "$IMG_FILE" | xz -T0 -"$XZ_LEVEL" > "$IMG_FILE.xz"
+mv "$IMG_FILE.xz" "$IMG_XZ"
 (cd "$BUILD_DIR" && sha256sum "${IMG_XZ##*/}") > "$IMG_XZ.sha256"
 rm -f "$IMG_FILE"
 

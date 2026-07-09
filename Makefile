@@ -69,10 +69,12 @@ rootfs: build/rootfs-$(PROFILE)  ## Bootstrap the root filesystem
 build/rootfs-$(PROFILE): build/debs/Packages.gz config.sh $(shell find overlays/rootfs bootstrap -type f)
 	@sudo PROFILE=$(PROFILE) NICE=$(NICE) scripts/mk-rootfs.sh
 
-image: build/.image-$(PROFILE)-stamp  ## Build the disk image
-build/.image-$(PROFILE)-stamp: build/rootfs-$(PROFILE)
+# Newest image decides freshness
+IMG := $(or $(shell ls -t build/*-$(PROFILE)-*.img* 2>/dev/null | grep -v '\.sha256$$' | head -n1),NOIMAGE)
+
+image: $(IMG)  ## Build the disk image
+$(IMG): build/rootfs-$(PROFILE)
 	@sudo PROFILE=$(PROFILE) NICE=$(NICE) XZ_LEVEL=$(XZ_LEVEL) IMG_SIZE=$(IMG_SIZE) scripts/mk-image.sh
-	@touch build/.image-$(PROFILE)-stamp
 
 standard:  ## Build the standard (default) disk image
 	@$(MAKE) image PROFILE=standard
