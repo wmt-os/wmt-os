@@ -7,13 +7,13 @@ NPROC := $(shell nproc)
 PROFILE ?= standard
 
 # Source lib.sh so the kernel build inherits ARCH/CROSS_COMPILE/KCFLAGS and runs reniced;
-# kernel-id.sh aligns LOCALVERSION and the baked timestamp with mk-deb's builds
+# kernel-id.sh aligns LOCALVERSION and the baked timestamp with mk-debs's builds
 KMAKE := . ./scripts/lib.sh && $(MAKE) -C linux-wmt -j$(NPROC) \
 	LOCALVERSION=-$$(scripts/kernel-id.sh) KBUILD_BUILD_TIMESTAMP="$$(scripts/kernel-id.sh stamp)"
 
 .DEFAULT_GOAL := help
 .NOTPARALLEL:
-.PHONY: help all deps repo sync reset rebase config kernel modules deb rootfs standard desktop image clean mrproper distclean
+.PHONY: help all deps repo sync reset rebase config kernel modules debs rootfs standard desktop image clean mrproper distclean
 
 help:  ## Show this help text
 	@awk -F':.*## ' '/^[a-z][a-z-]*:.*##/ {printf "  \033[36m%-9s\033[0m  %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -57,11 +57,11 @@ modules: linux-wmt/modules.order  ## Build the kernel modules
 
 FORCE:
 
-# ---- Debian package ----
+# ---- Debian packages ----
 
-deb: build/debs/Packages.gz  ## Build the kernel deb packages
+debs: build/debs/Packages.gz  ## Build the kernel deb packages
 build/debs/Packages.gz: linux-wmt/arch/arm/boot/zImage linux-wmt/modules.order $(shell find packages -type f)
-	@scripts/mk-deb.sh
+	@scripts/mk-debs.sh
 
 # ---- Image ----
 

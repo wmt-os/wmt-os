@@ -16,7 +16,7 @@ id=$({ printf '%s\n' "$commit"; git --no-optional-locks diff HEAD; cat .config; 
 	printf '%s\n' "$ARCH" "$CROSS_COMPILE" "$KCFLAGS"; } | sha256sum | cut -c1-12)$dirty
 
 if [ "${1:-}" = stamp ]; then
-	# Prints the timestamp of the last mk-deb build for this id
+	# Prints the timestamp of the last mk-debs build for this id
 	set -- "$BUILD_DIR/debs/linux-image-"*"-${id}_"*_armel.deb
 	[ -e "$1" ] || exit 0
 	LC_ALL=C date -d "@$(dpkg-deb -f "$1" Version)"
