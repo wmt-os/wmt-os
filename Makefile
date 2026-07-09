@@ -3,13 +3,7 @@
 # Copyright (C) 2026 Logan Russell <me@lrussell.net>
 
 SHELL := /bin/bash
-NPROC := $(shell nproc)
 PROFILE ?= standard
-
-# Source lib.sh so the kernel build inherits ARCH/CROSS_COMPILE/KCFLAGS and runs reniced;
-# kernel-id.sh aligns LOCALVERSION and the baked timestamp with mk-debs's builds
-KMAKE := . ./scripts/lib.sh && $(MAKE) -C linux-wmt -j$(NPROC) \
-	LOCALVERSION=-$$(scripts/kernel-id.sh) KBUILD_BUILD_TIMESTAMP="$$(scripts/kernel-id.sh stamp)"
 
 .DEFAULT_GOAL := help
 .NOTPARALLEL:
@@ -46,6 +40,11 @@ config:  ## Generate the kernel config from the seed
 	@scripts/mk-config.sh
 linux-wmt/.config: kernel-seed.config | linux-wmt/.git
 	@scripts/mk-config.sh
+
+# Source lib.sh so the kernel build inherits ARCH/CROSS_COMPILE/KCFLAGS and runs reniced;
+# kernel-id.sh aligns LOCALVERSION and the baked timestamp with mk-debs's builds
+KMAKE := . ./scripts/lib.sh && $(MAKE) -C linux-wmt -j$$(nproc) \
+	LOCALVERSION=-$$(scripts/kernel-id.sh) KBUILD_BUILD_TIMESTAMP="$$(scripts/kernel-id.sh stamp)"
 
 linux-wmt/arch/arm/boot/zImage: linux-wmt/.config FORCE
 	$(KMAKE) zImage dtbs
