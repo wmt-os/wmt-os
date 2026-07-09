@@ -17,6 +17,6 @@ rm -f /etc/dropbear/dropbear_*_host_key*
 systemctl mask systemd-firstboot.service systemd-networkd-wait-online.service
 
 # Reset build-host identity for first boot
-rm -f /etc/machine-id /etc/hostname
+rm -f /etc/machine-id /etc/hostname /etc/resolv.conf
 
 exit 0
