@@ -7,9 +7,10 @@ configure|triggered)
 		src=$1 dst=$2
 		shift 2
 		[ -r "$src" ] || return 0
-		sed -e 's/Debian GNU\/Linux/WMT OS/' "$@" "$src" > "$dst"
+		sed -e 's/Debian GNU\/Linux\( [0-9]\+\)\?/WMT OS/' "$@" "$src" > "$dst"
 	}
 	brand /usr/lib/os-release.debian /usr/lib/os-release \
+		-e '/^VERSION=/d' -e '/^VERSION_ID=/d' \
 		-e 's/^ID=debian/ID=wmt-os\nID_LIKE=debian/' \
 		-e 's#^HOME_URL=.*#HOME_URL="https://wmt-os.org/"#' \
 		-e 's#^SUPPORT_URL=.*#SUPPORT_URL="https://github.com/wmt-os/wmt-os"#' \
