@@ -1,2 +1,2 @@
-URxvt.background: black
-URxvt.foreground: white
+XTerm*scrollBar: true
+UXTerm*scrollBar: true
