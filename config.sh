@@ -16,7 +16,7 @@ export BUILDER_NAME="WMT OS Builder"
 export BUILDER_EMAIL="root@wmt-os.org"
 
 export EXTRA_PACKAGES="cloud-guest-utils debian-archive-keyring dropbear fastfetch firmware-mediatek htop network-manager rsync screen sudo wireless-regdb wpasupplicant"
-export DESKTOP_PACKAGES="alsa-utils dbus-user-session dillo gogglesmm icewm polkitd xdm xfe xorg xserver-xorg-video-wmt xterm"
+export DESKTOP_PACKAGES="alsa-utils dbus-user-session gnome-icon-theme gogglesmm icewm netsurf-gtk polkitd xdm xfe xorg xserver-xorg-video-wmt xterm"
 
 export PROFILE="${PROFILE:-standard}" # Image profile: standard | desktop
 export XZ_LEVEL="${XZ_LEVEL:-9}" # Image compression level: xz 0-9[e]
