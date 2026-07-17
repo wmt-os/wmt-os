@@ -1,0 +1,3 @@
+# WMT OS overrides. The hardware cannot resume from suspend; hide it.
+SuspendCommand=""
+HibernateCommand=""
