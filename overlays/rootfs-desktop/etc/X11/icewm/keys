@@ -1,0 +1,19 @@
+# WMT OS system hotkeys; override per-user in ~/.icewm/keys.
+
+# Launchers
+key "Alt+Ctrl+t"            x-terminal-emulator
+key "Alt+Ctrl+b"            sensible-browser about:blank
+key "XF86HomePage"          sensible-browser about:blank
+
+# Backlight
+key "Super+Up"              xbacklight -time 0 -steps 1 -inc 7
+key "Super+Down"            xbacklight -time 0 -steps 1 -dec 7
+key "XF86MonBrightnessUp"   xbacklight -time 0 -steps 1 -inc 7
+key "XF86MonBrightnessDown" xbacklight -time 0 -steps 1 -dec 7
+
+# Volume
+key "Super+equal"           amixer sset PCM 5%+
+key "Super+minus"           amixer sset PCM 5%-
+key "XF86AudioRaiseVolume"  amixer sset PCM 5%+
+key "XF86AudioLowerVolume"  amixer sset PCM 5%-
+key "XF86AudioMute"         amixer sset PCM toggle
