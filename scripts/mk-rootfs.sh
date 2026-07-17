@@ -16,8 +16,8 @@ rm -rf "$ROOTFS_DIR" "$ROOTFS_DIR.tmp"
 # Derive the metapackage name from the kernel release
 KERNEL_META="linux-image-$(make -s -C "$KERNEL_DIR" kernelrelease LOCALVERSION= | cut -d- -f2-)"
 
-PACKAGES="$EXTRA_PACKAGES $KERNEL_META wmt-os-base"
-[ "$PROFILE" = desktop ] && PACKAGES="$PACKAGES $DESKTOP_PACKAGES"
+PACKAGES=("${EXTRA_PACKAGES[@]}" "$KERNEL_META" wmt-os-base)
+[ "$PROFILE" = desktop ] && PACKAGES+=("${DESKTOP_PACKAGES[@]}")
 
 cd "$BASE_DIR"
 
@@ -26,7 +26,7 @@ cd "$BASE_DIR"
 # Debian. sources.list carries only the local repo and is removed once done
 mmdebstrap \
 	--variant=standard \
-	--include="${PACKAGES// /,}" \
+	--include="${PACKAGES[*]}" \
 	--architectures=armel \
 	--setup-hook='cp -r overlays/rootfs-base/. "$1"/' \
 	--setup-hook='if [ -d "overlays/rootfs-$PROFILE" ]; then cp -r "overlays/rootfs-$PROFILE/." "$1"/; fi' \

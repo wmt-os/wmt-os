@@ -15,9 +15,38 @@ export KERNEL_REPO="https://github.com/wmt-os/linux-wmt.git"
 export BUILDER_NAME="WMT OS Builder"
 export BUILDER_EMAIL="root@wmt-os.org"
 
-export EXTRA_PACKAGES="cloud-guest-utils debian-archive-keyring dropbear fastfetch firmware-mediatek htop network-manager rsync screen sudo wireless-regdb wpasupplicant"
-export DESKTOP_PACKAGES="alsa-utils dbus-user-session fonts-wqy-microhei fox1.6-utils gnome-icon-theme gogglesmm icewm netsurf-gtk polkitd xdm xfe xorg xserver-xorg-video-wmt xterm"
-
 export PROFILE="${PROFILE:-standard}" # Image profile: standard | desktop
 export XZ_LEVEL="${XZ_LEVEL:-9}" # Image compression level: xz 0-9[e]
 export IMG_SIZE="${IMG_SIZE:-3500}" # Image size in MB
+
+EXTRA_PACKAGES=(
+	cloud-guest-utils
+	debian-archive-keyring
+	dropbear
+	fastfetch
+	firmware-mediatek
+	htop
+	network-manager
+	rsync
+	screen
+	sudo
+	wireless-regdb
+	wpasupplicant
+)
+
+DESKTOP_PACKAGES=(
+	alsa-utils
+	dbus-user-session
+	fonts-wqy-microhei
+	fox1.6-utils
+	gnome-icon-theme
+	gogglesmm
+	icewm
+	netsurf-gtk
+	polkitd
+	xdm
+	xfe
+	xorg
+	xserver-xorg-video-wmt
+	xterm
+)
