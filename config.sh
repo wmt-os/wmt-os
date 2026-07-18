@@ -44,6 +44,7 @@ DESKTOP_PACKAGES=(
 	icewm
 	netsurf-gtk
 	polkitd
+	udevil
 	xdm
 	xfe
 	xorg

@@ -1,0 +1,4 @@
+#!/bin/sh
+# WMT OS session startup; override per-user in ~/.icewm/startup.
+
+devmon &
