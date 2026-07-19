@@ -45,6 +45,7 @@ DESKTOP_PACKAGES=(
 	netsurf-gtk
 	polkitd
 	udevil
+	xbacklight
 	xdm
 	xfe
 	xorg
