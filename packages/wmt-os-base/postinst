@@ -18,5 +18,6 @@ configure|triggered)
 	brand /etc/issue.debian /etc/issue
 	brand /etc/issue.net.debian /etc/issue.net
 	brand /usr/share/base-files/motd /etc/motd
+	ln -sf wmt-os /etc/dpkg/origins/default
 	;;
 esac

@@ -10,5 +10,6 @@ remove|abort-install|disappear)
 	if [ -r /usr/share/base-files/motd ]; then
 		cp -p /usr/share/base-files/motd /etc/motd
 	fi
+	ln -sf debian /etc/dpkg/origins/default
 	;;
 esac

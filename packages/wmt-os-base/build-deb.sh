@@ -15,12 +15,14 @@ mkdir -p "$DEBS"
 staging=$(mktemp -d)
 install -Dm644 "$SRC/wmt.sources" "$staging/etc/apt/sources.list.d/wmt.sources"
 install -Dm644 "$SRC/wmt-os.pref" "$staging/etc/apt/preferences.d/wmt-os.pref"
+install -Dm644 "$SRC/wmt-os" "$staging/etc/dpkg/origins/wmt-os"
 install -Dm755 "$SRC/preinst" "$staging/DEBIAN/preinst"
 install -Dm755 "$SRC/postinst" "$staging/DEBIAN/postinst"
 install -Dm755 "$SRC/postrm" "$staging/DEBIAN/postrm"
 install -Dm644 "$SRC/triggers" "$staging/DEBIAN/triggers"
 printf '%s\n' /etc/apt/sources.list.d/wmt.sources \
-	/etc/apt/preferences.d/wmt-os.pref > "$staging/DEBIAN/conffiles"
+	/etc/apt/preferences.d/wmt-os.pref \
+	/etc/dpkg/origins/wmt-os > "$staging/DEBIAN/conffiles"
 cat > "$staging/DEBIAN/control" <<EOF
 Package: wmt-os-base
 Version: $VERSION
@@ -30,7 +32,8 @@ Section: admin
 Priority: optional
 Description: WMT OS distribution identity and archive trust
  Derives the identity files (os-release, issue, motd) from Debian's
- and carries the WMT OS archive signing key, package source, and pin.
+ and carries the WMT OS archive signing key, package source, pin, and
+ dpkg origin.
 EOF
 dpkg-deb --root-owner-group --build "$staging" "$DEBS/wmt-os-base_${VERSION}_all.deb" >/dev/null
 rm -rf "$staging"
