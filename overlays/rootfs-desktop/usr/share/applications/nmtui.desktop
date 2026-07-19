@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=NetworkManager
+Comment=Manage your network connections
+Exec=nmtui
+Icon=nm-device-wireless
+Terminal=true
+Categories=Settings;
