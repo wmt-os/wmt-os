@@ -98,6 +98,16 @@ If a kernel update causes issues, the boot partition carries a script to easily 
 
 The script displays the current and previous kernels and prompts you to switch between them. Re-run it to switch back.
 
+## Kernel command line
+
+Extra arguments can be passed to the kernel at boot by setting `EXTRA_CMDLINE` in `/etc/default/wmt-boot`:
+
+```bash
+EXTRA_CMDLINE="loglevel=7"
+```
+
+Run `sudo wmt-deploy-boot` to apply the change, which takes effect on the next reboot. The arguments are appended to the built-in boot arguments and persist across kernel updates. Rolling back to the previous kernel also restores its original arguments.
+
 ## Desktop hotkeys
 
 The desktop profile ships with a few system-wide hotkeys. These can be overridden per-user by editing `~/.icewm/keys`:
