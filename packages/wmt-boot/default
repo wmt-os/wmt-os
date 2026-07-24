@@ -1,0 +1,5 @@
+# Extra kernel command-line arguments, appended to the built-in boot
+# arguments each time a boot slot is written. After editing, run
+# wmt-deploy-boot to refresh the active slot. The rollback slot keeps
+# the arguments it was deployed with.
+EXTRA_CMDLINE=""

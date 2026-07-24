@@ -16,24 +16,37 @@ version=${1:-$(ls -t /boot/vmlinuz-* 2>/dev/null | head -n1 | sed 's#.*/vmlinuz-
 image="/boot/vmlinuz-$version"
 [ -n "$version" ] && [ -f "$image" ] || exit 0
 
-dtb=$(find "/usr/lib/linux-image-$version" -name 'wm8505-ref.dtb' 2>/dev/null | head -n1)
+dtb=$(find "/usr/lib/linux-image-$version" -name 'wm8505-ref.dtb' 2>/dev/null)
 [ -n "$dtb" ] || exit 0
 
-# Stage on the FAT, not /tmp: keeps the final swap an in-filesystem rename, and /tmp is a tiny tmpfs
+# The kernel deb's Version is the bare build stamp; render it as the splash's UTC build time
+stamp=$(dpkg-query -W -f='${Version}' "linux-image-$version")
+build_time=$(date -u -d "@$stamp" +"%Y-%m-%d %H:%M:%S UTC")
+
+# Optional user-supplied kernel arguments
+EXTRA_CMDLINE=
+[ -f /etc/default/wmt-boot ] && . /etc/default/wmt-boot
+
+# Stage on the FAT: keeps the final swap an in-filesystem rename
 new="$boot/.script.new"
 rm -rf "$new"
-mkdir -p "$new"
+mkdir "$new"
+
 # uzImage.bin: zImage with its DTB appended, wrapped as a U-Boot kernel image
 cat "$image" "$dtb" > "$new/.payload"
 mkimage -A arm -O linux -T kernel -C none -a 0x8000 -e 0x8000 -n linux-wmt \
 	-d "$new/.payload" "$new/uzImage.bin" >/dev/null
-# The kernel deb's Version is the bare build stamp; render it as the splash's UTC build time
-stamp=$(dpkg-query -W -f='${Version}' "linux-image-$version")
-build_time=$(date -u -d "@$stamp" +"%Y-%m-%d %H:%M:%S UTC")
-sed "1i setenv KERNEL_RELEASE $version\nsetenv BUILD_TIME $build_time" "$template" > "$new/.payload"
+
+{
+	printf 'setenv KERNEL_RELEASE %s\n' "$version"
+	printf 'setenv BUILD_TIME %s\n' "$build_time"
+	printf 'setenv EXTRA_CMDLINE %s\n' "$EXTRA_CMDLINE"
+	cat "$template"
+} > "$new/.payload"
 mkimage -A arm -O linux -T script -C none -a 1 -e 0 -n "WMT OS boot script" \
 	-d "$new/.payload" "$new/scriptcmd" >/dev/null
-rm -f "$new/.payload"
+rm "$new/.payload"
+
 printf '%s\n' "$version" > "$new/version"
 sync
 
