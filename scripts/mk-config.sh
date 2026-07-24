@@ -25,13 +25,8 @@ dpkg-deb --fsys-tarfile "$tmp/$CONFIG_PKG"_*_armel.deb | tar -xOf - "$CONFIG_FIL
 
 log INFO "Merging config"
 cd "$KERNEL_DIR"
-# Snapshot the seed's enabled options after dependency resolution, to re-assert below
-cp "$BASE_DIR/kernel-seed.config" "$tmp/.config"
-make KCONFIG_CONFIG="$tmp/.config" olddefconfig
-grep -E '=(y|m)$' "$tmp/.config" > "$tmp/seed.defconfig"
-
-# Merge the Debian base under the seed, re-assert the snapshot, then finalize
-scripts/kconfig/merge_config.sh -m -O "$tmp" "$tmp/config.debian" "$BASE_DIR/kernel-seed.config" "$tmp/seed.defconfig"
+# Merge the Debian base under the seed, then finalize
+scripts/kconfig/merge_config.sh -m -O "$tmp" "$tmp/config.debian" "$BASE_DIR/kernel-seed.config"
 make KCONFIG_CONFIG="$tmp/.config" olddefconfig
 
 # Replace existing config only on real changes
