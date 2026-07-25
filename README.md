@@ -8,7 +8,7 @@ Development is focused on the Sylvania Netbook (SYNET07526 / SYNET7WID), which o
 
 ## Getting Started
 
-Flash an image below to an SD card and the netbook boots straight into WMT OS. A setup wizard on the flashed card's boot partition configures the hostname, timezone, username, and account passwords prior to boot. See [INSTALLATION](INSTALLATION.md) for the full walkthrough, a tour of each image, and first-time setup from Windows CE itself.
+Flash an image below to an SD card and the netbook boots straight into WMT OS. A setup wizard on the card's boot partition configures the hostname, timezone, username, and account passwords prior to boot. See [INSTALLATION](INSTALLATION.md) for the full setup guide. Once installed, see [USAGE](USAGE.md) for using and maintaining your system.
 
 - **[wmt-os-standard.img.xz](https://releases.wmt-os.org/latest/wmt-os-standard.img.xz)** ([sha256](https://releases.wmt-os.org/latest/wmt-os-standard.img.xz.sha256)): Console image
 - **[wmt-os-desktop.img.xz](https://releases.wmt-os.org/latest/wmt-os-desktop.img.xz)** ([sha256](https://releases.wmt-os.org/latest/wmt-os-desktop.img.xz.sha256)): Desktop image (recommended)
@@ -51,13 +51,13 @@ Images are dated builds named `wmt-os-<profile>-<stamp>.img.xz`, published at [r
 
 ## Repository Contents
 
-- **`Makefile`:** The build entry point; run `make` to list the available targets.
-- **`config.sh`:** Build settings: cross toolchain, kernel repo and branch, image options, and package sets.
-- **`kernel-seed.config`:** Kernel options that "seed" support for the WM8505, merged over Debian's default `armel_none_rpi` config.
-- **`scripts/`:** The build pipeline, split into small single-purpose steps (`mk-config`, `mk-debs`, `mk-rootfs`, `mk-image`), plus the kernel repo helpers.
-- **`packages/`:** Debian package sources, each built by its own `build-deb.sh`: `wmt-boot/` (U-Boot boot images, the A/B rollback slot, and the boot partition's user-facing files) and `wmt-os-base/` (distribution identity and repository trust).
-- **`bootstrap/`:** Inputs applied while the rootfs bootstraps: `hooks-base.sh` (in-chroot configuration) and the build-time APT priorities.
-- **`overlays/`:** Trees copied verbatim over the root filesystem, including the first-boot setup service.
+- **`Makefile`**: The build entry point; run `make` to list the available targets.
+- **`config.sh`**: Build settings: cross toolchain, kernel repo and branch, image options, and package sets.
+- **`kernel-seed.config`**: Kernel options that "seed" support for the WM8505, merged over Debian's default `armel_none_rpi` config.
+- **`scripts/`**: The build pipeline, split into small single-purpose steps (`mk-config`, `mk-debs`, `mk-rootfs`, `mk-image`), plus the kernel repo helpers.
+- **`packages/`**: Debian package sources, each built by its own `build-deb.sh`: `wmt-boot/` (U-Boot boot images, the A/B rollback slot, and the boot partition's user-facing files) and `wmt-os-base/` (distribution identity and repository trust).
+- **`bootstrap/`**: Inputs applied while the rootfs bootstraps: `hooks-base.sh` (in-chroot configuration) and the build-time APT priorities.
+- **`overlays/`**: Trees copied verbatim over the root filesystem, including the first-boot setup service.
 
 ## Building from Source
 
@@ -89,8 +89,8 @@ The build invokes `sudo` for the steps that need root (the rootfs and image). Th
 
 Special thanks to the following projects:
 
-- **[linux-vtwm](https://github.com/linux-wmt/linux-vtwm):** For pioneering mainline support for WonderMedia SoCs, including the WM8505.
-- **[projectgus/kernel_wm8505](https://github.com/projectgus/kernel_wm8505):** For archiving VIA's original BSP patches, which served as an invaluable reference throughout this modernization effort.
+- **[linux-vtwm](https://github.com/linux-wmt/linux-vtwm)**: For pioneering mainline support for WonderMedia SoCs, including the WM8505.
+- **[projectgus/kernel_wm8505](https://github.com/projectgus/kernel_wm8505)**: For archiving VIA's original BSP patches, which served as an invaluable reference throughout this modernization effort.
 
 ---
 
