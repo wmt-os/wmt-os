@@ -66,6 +66,7 @@ rm -rf "$staging"
 
 "$BASE_DIR/packages/wmt-boot/build-deb.sh"
 "$BASE_DIR/packages/wmt-os-base/build-deb.sh"
+"$BASE_DIR/packages/wmt-platform-wm8505/build-deb.sh"
 
 log INFO "Indexing local repository"
 cd "$DEBS"

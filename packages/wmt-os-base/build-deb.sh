@@ -30,6 +30,7 @@ Architecture: all
 Maintainer: $BUILDER_NAME <$BUILDER_EMAIL>
 Section: admin
 Priority: optional
+Depends: wmt-platform-wm8505
 Description: WMT OS distribution identity and archive trust
  Derives the identity files (os-release, issue, motd) from Debian's
  and carries the WMT OS archive signing key, package source, pin, and

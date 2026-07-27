@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+case "$1" in
+configure)
+	# Remove unowned asound.conf if unmodified (superseded by drop-ins)
+	if echo "4564cefd6f038a0e1db00cfd20a26918  /etc/asound.conf" | md5sum -c >/dev/null 2>&1; then
+		rm -f /etc/asound.conf
+	fi
+	;;
+esac
