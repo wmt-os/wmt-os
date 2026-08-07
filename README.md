@@ -17,7 +17,7 @@ Flash an image below to an SD card and the netbook boots straight into WMT OS. A
 
 | Component                                            | Status | Notes                                           |
 | :--------------------------------------------------- | :----: | :---------------------------------------------- |
-| **Display**                                          |   🟢   | Native LCD output                               |
+| **Display**                                          |   🟢   | Built-in LCD panel                              |
 | **Backlight**                                        |   🟢   | PWM brightness control                          |
 | **Graphics Acceleration**                            |        |                                                 |
 | &nbsp;&nbsp;&nbsp;&nbsp;&#8627; _Kernel_             |   🟢   | DRM/KMS driver with 2D and console acceleration |
@@ -26,16 +26,14 @@ Flash an image below to an SD card and the netbook boots straight into WMT OS. A
 | &nbsp;&nbsp;&nbsp;&nbsp;&#8627; _JPEG/MJPEG Decoder_ |   🔵   | Dedicated decode engine for video playback      |
 | &nbsp;&nbsp;&nbsp;&nbsp;&#8627; _Video Scaler_       |   🔵   | Hardware scaling engine                         |
 | **Built-in Audio**                                   |   🟢   | Headphone and speaker output                    |
-| **Keyboard & Touchpad**                              |   🟢   | Native PS/2 controller                          |
+| **Keyboard & Touchpad**                              |   🟢   | Built-in PS/2 controller                        |
 | **Internal Storage**                                 |   🔴   | NAND flash controller inaccessible              |
-| **SD Card**                                          |   🟢   | Native SD/MMC controller                        |
+| **SD Card**                                          |   🟢   | Built-in SD/MMC controller                      |
 | **Wi-Fi**                                            |   🟢   | Internal USB adapter                            |
 | **USB Peripherals**                                  |   🟢   | Keyboards, mice, audio, storage, and networking |
-| **Battery Monitoring**                               |   🟢   | Voltage-based charge estimation\*               |
+| **Battery Monitoring**                               |   🟢   | Self-calibrating voltage-based estimation       |
 
 _(Legend: 🟢 Supported | 🟡 Partial | 🔵 Planned | 🔴 Unsupported)_
-
-_\* Fully supported on VT1613 boards. An older revision, identifiable by its green/pink audio jacks and VT1612A codec, currently misreads battery voltage (pegged at 0% until it gets its own calibration) and never signals charge-complete. Implementation pending._
 
 ## Kernel
 

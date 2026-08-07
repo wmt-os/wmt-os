@@ -4,6 +4,10 @@
 
 The built-in Wi-Fi adapter is enabled on boot. You can configure your network using `nmtui` in the terminal (on the desktop, this is also found in the menu under Settings &#8594; NetworkManager). If your specific netbook shipped with the older 802.11g adapter rather than the 802.11n variant, you may need to ensure your router allows legacy [802.11g](https://en.wikipedia.org/wiki/IEEE_802.11g-2003) clients.
 
+## Battery
+
+These netbooks measure the battery indirectly, by timing a simple [RC circuit](https://en.wikipedia.org/wiki/RC_circuit) whose scale varies from unit to unit, so the driver calibrates itself against the one fixed reference the board provides: the low-battery alarm. On a fresh install only the charging state is reported; the charge percentage appears once the battery has drained down to that alarm for the first time, and works normally thereafter. While plugged in, the charger's voltage masks the battery's own, so the percentage cannot update. It keeps the last reading taken on battery, if any, and shows full once charging completes. Nothing needs configuring. Calibration happens on its own, repeats at every later alarm, and persists across reboots and kernel updates.
+
 ## Updates
 
 Updates ship through the WMT OS APT repository, which is preconfigured on every image. Upgrading is exactly the same as any Debian-based system:
