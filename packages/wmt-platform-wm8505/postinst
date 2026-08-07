@@ -6,5 +6,7 @@ configure)
 	if echo "4564cefd6f038a0e1db00cfd20a26918  /etc/asound.conf" | md5sum -c >/dev/null 2>&1; then
 		rm -f /etc/asound.conf
 	fi
+	# Start battery-calibration persistence without waiting for a reboot
+	udevadm trigger --subsystem-match=power_supply --action=change 2>/dev/null || :
 	;;
 esac

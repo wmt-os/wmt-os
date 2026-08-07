@@ -1,0 +1,20 @@
+#!/bin/sh
+# First run each boot restores the banked calibration; later runs bank changes
+set -e
+
+SYS=/sys/class/power_supply/wm8505-battery
+DIR=/var/lib/wmt-battery
+
+[ -d "$SYS" ] || exit 0
+
+rise=$(cat "$SYS/calibrate")
+
+if mkdir /run/wmt-battery 2>/dev/null; then
+	[ "$rise" = 0 ] && [ -f "$DIR/rise_us" ] &&
+		cat "$DIR/rise_us" > "$SYS/calibrate" || :
+	exit 0
+fi
+
+mkdir -p "$DIR"
+[ "$rise" != 0 ] && [ "$rise" != "$(cat "$DIR/rise_us" 2>/dev/null)" ] &&
+	echo "$rise" > "$DIR/rise_us" || :

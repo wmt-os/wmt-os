@@ -1,0 +1,3 @@
+# power_supply drops its own KOBJ_ADD (properties are unreadable during
+# device_add), so the script syncs on every event
+SUBSYSTEM=="power_supply", KERNEL=="wm8505-battery", ACTION=="add|change", RUN+="/usr/libexec/wmt-battery-cal"
