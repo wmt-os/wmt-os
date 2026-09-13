@@ -41,11 +41,22 @@ configure)
 		echo "wmt-boot: $boot is not mounted" >&2
 		exit 1
 	fi
+
 	mkdir -p "$boot"
 	cp -r /usr/share/wmt-boot/overlay/. "$boot"/
 	fill_timezones
 	fill_keymaps
 	sync
+
+	# Ensure /etc/fstab has a root entry before deploying the ro boot slot
+	if [ ! -s /etc/fstab ] || \
+	   echo "1b2263bb914662da8f698e2d3fdb201d  /etc/fstab" | md5sum -c >/dev/null 2>&1; then
+		cp /usr/share/wmt-boot/fstab /etc/fstab
+	elif ! grep -q '/dev/mmcblk0p2' /etc/fstab; then
+		[ -z "$(tail -c1 /etc/fstab 2>/dev/null)" ] || echo >> /etc/fstab
+		grep '^/dev/mmcblk0p2' /usr/share/wmt-boot/fstab >> /etc/fstab
+	fi
+
 	# Activate via trigger so this dedups with the kernel hook in one transaction
 	dpkg-trigger --no-await wmt-deploy-boot
 	;;

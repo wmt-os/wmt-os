@@ -1,8 +1,7 @@
 #!/bin/bash
 # WMT OS First-Boot Service
 #
-# Applies setup.ini (with sane fallbacks), generates SSH keys,
-# grows the rootfs, and makes a swap file.
+# Applies setup.ini (with sane fallbacks), generates SSH keys, and grows the rootfs.
 #
 # Copyright (C) 2026 Logan Russell <me@lrussell.net>
 
@@ -50,12 +49,5 @@ done
 
 growpart /dev/mmcblk0 2
 resize2fs /dev/mmcblk0p2
-
-fallocate -l 256M /swapfile
-chmod 600 /swapfile
-mkswap /swapfile
-printf '/swapfile\tnone\t\tswap\tdefaults\t0\t0\n' >> /etc/fstab
-systemctl daemon-reload
-swapon -a
 
 sync

@@ -73,7 +73,8 @@ IMG := $(or $(shell ls -t build/*-$(PROFILE)-*.img* 2>/dev/null | grep -v '\.sha
 
 image: $(IMG)  ## Build the disk image
 $(IMG): build/rootfs-$(PROFILE)
-	@sudo PROFILE=$(PROFILE) NICE=$(NICE) XZ_LEVEL=$(XZ_LEVEL) IMG_SIZE=$(IMG_SIZE) scripts/mk-image.sh
+	@sudo PROFILE=$(PROFILE) NICE=$(NICE) XZ_LEVEL=$(XZ_LEVEL) \
+		IMG_SIZE=$(IMG_SIZE) SWAP_SIZE=$(SWAP_SIZE) scripts/mk-image.sh
 
 standard:  ## Build the standard (default) disk image
 	@$(MAKE) image PROFILE=standard

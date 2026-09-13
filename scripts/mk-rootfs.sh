@@ -26,12 +26,14 @@ cd "$BASE_DIR"
 # Debian. sources.list carries only the local repo and is removed once done
 mmdebstrap \
 	--variant=standard \
+	--skip=cleanup/reproducible/machine-id \
 	--include="${PACKAGES[*]}" \
 	--architectures=armel \
 	--setup-hook='cp -r overlays/rootfs-base/. "$1"/' \
 	--setup-hook='if [ -d "overlays/rootfs-$PROFILE" ]; then cp -r "overlays/rootfs-$PROFILE/." "$1"/; fi' \
 	--setup-hook='install -Dm644 bootstrap/apt-build.pref "$1"/etc/apt/preferences.d/apt-build.pref' \
 	--setup-hook='install -Dm644 packages/wmt-os-base/wmt.sources "$1"/etc/apt/sources.list.d/wmt.sources' \
+	--setup-hook='install -Dm644 packages/wmt-boot/fstab "$1"/etc/fstab' \
 	--customize-hook='chroot "$1" /bin/sh < bootstrap/hooks-base.sh' \
 	--customize-hook='if [ -e "bootstrap/hooks-$PROFILE.sh" ]; then chroot "$1" /bin/sh < "bootstrap/hooks-$PROFILE.sh"; fi' \
 	--customize-hook='rm -f "$1"/etc/apt/sources.list "$1"/etc/apt/preferences.d/apt-build.pref' \

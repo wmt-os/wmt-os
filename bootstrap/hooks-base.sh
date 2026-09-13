@@ -20,9 +20,12 @@ systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
 
 # Keep systemd-firstboot from running; wmt-firstboot handles setup
 systemctl mask systemd-firstboot.service
+systemctl enable wmt-firstboot.service
 
 # Remove the Dropbear host keys; first boot regenerates them
 rm -f /etc/dropbear/dropbear_*_host_key*
 
-# Remove build host identity; trigger ConditionFirstBoot
-rm -f /etc/machine-id /etc/hostname /etc/resolv.conf
+# Remove build host identity; trigger ConditionFirstBoot. The root is read-only
+# until systemd-remount-fs, so machine-id must exist, holding "uninitialized"
+echo uninitialized > /etc/machine-id
+rm -f /etc/hostname /etc/resolv.conf

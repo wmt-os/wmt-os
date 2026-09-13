@@ -45,6 +45,10 @@ mount "${LOOP_DEV}p2" "$MNT_ROOTFS"
 log INFO "Populating filesystems"
 cp -a "$BUILD_DIR/rootfs-$PROFILE"/. "$MNT_ROOTFS/"
 
+fallocate -l "${SWAP_SIZE}M" "$MNT_ROOTFS/swapfile"
+chmod 600 "$MNT_ROOTFS/swapfile"
+mkswap "$MNT_ROOTFS/swapfile"
+
 # Move the package-staged boot files onto the boot partition
 cp -r "$MNT_ROOTFS"/boot/uboot/. "$MNT_BOOT/"
 rm -rf "$MNT_ROOTFS"/boot/uboot/*

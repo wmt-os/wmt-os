@@ -18,6 +18,7 @@ export BUILDER_EMAIL="root@wmt-os.org"
 export PROFILE="${PROFILE:-standard}" # Image profile: standard | desktop
 export XZ_LEVEL="${XZ_LEVEL:-9}" # Image compression level: xz 0-9[e]
 export IMG_SIZE="${IMG_SIZE:-3500}" # Image size in MB
+export SWAP_SIZE="${SWAP_SIZE:-256}" # Swap size in MB
 
 EXTRA_PACKAGES=(
 	cloud-guest-utils

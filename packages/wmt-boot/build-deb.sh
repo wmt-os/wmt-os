@@ -19,6 +19,7 @@ install -Dm755 "$SRC/kernel-postinst" "$staging/etc/kernel/postinst.d/zz-wmt-boo
 install -Dm755 "$SRC/kernel-postrm" "$staging/etc/kernel/postrm.d/zz-wmt-boot"
 install -Dm644 "$SRC/uboot.cmd" "$staging/usr/share/wmt-boot/uboot.cmd"
 install -Dm644 "$SRC/default" "$staging/etc/default/wmt-boot"
+install -Dm644 "$SRC/fstab" "$staging/usr/share/wmt-boot/fstab"
 for f in "$SRC"/overlay/*; do
 	install -Dm644 "$f" "$staging/usr/share/wmt-boot/overlay/${f##*/}"
 done
@@ -32,7 +33,7 @@ Architecture: all
 Maintainer: $BUILDER_NAME <$BUILDER_EMAIL>
 Section: kernel
 Priority: optional
-Depends: tzdata, u-boot-tools, xkb-data
+Depends: dosfstools, tzdata, u-boot-tools, xkb-data
 Description: WonderMedia WM8505 boot integration
  Builds each kernel's U-Boot boot image, keeping the previous one as a rollback.
 EOF
