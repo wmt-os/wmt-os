@@ -48,6 +48,7 @@ DESKTOP_PACKAGES=(
 	netsurf-gtk
 	polkitd
 	udevil
+	wmt-play
 	xbacklight
 	xdm
 	xfe
