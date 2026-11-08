@@ -36,7 +36,7 @@ rebase: repo  ## Rebase onto the latest upstream kernel (keeps build artifacts)
 
 # ---- Kernel ----
 
-config:  ## Generate the kernel config from the seed
+config: repo  ## Generate the kernel config from the seed
 	@scripts/mk-config.sh
 linux-wmt/.config: kernel-seed.config | linux-wmt/.git
 	@scripts/mk-config.sh
