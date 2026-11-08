@@ -11,10 +11,10 @@ rise=$(cat "$SYS/calibrate")
 
 if mkdir /run/wmt-battery 2>/dev/null; then
 	[ "$rise" = 0 ] && [ -f "$DIR/rise_us" ] &&
-		cat "$DIR/rise_us" > "$SYS/calibrate" || :
+		cat "$DIR/rise_us" > "$SYS/calibrate" || true
 	exit 0
 fi
 
 mkdir -p "$DIR"
 [ "$rise" != 0 ] && [ "$rise" != "$(cat "$DIR/rise_us" 2>/dev/null)" ] &&
-	echo "$rise" > "$DIR/rise_us" || :
+	echo "$rise" > "$DIR/rise_us" || true

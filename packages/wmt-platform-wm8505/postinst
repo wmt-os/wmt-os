@@ -7,6 +7,6 @@ configure)
 		rm -f /etc/asound.conf
 	fi
 	# Start battery-calibration persistence without waiting for a reboot
-	udevadm trigger --subsystem-match=power_supply --action=change 2>/dev/null || :
+	udevadm trigger --subsystem-match=power_supply --action=change 2>/dev/null || true
 	;;
 esac

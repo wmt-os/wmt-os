@@ -32,7 +32,7 @@ rm -f "$DEBS"/*.deb "$DEBS"/Packages.gz
 trap 'rm -f "$BASE_DIR"/linux-*.deb "$BASE_DIR"/linux-upstream_*' EXIT
 
 log INFO "Building $KERNEL_PKG ($KERNEL_VERSION)"
-BUILD_TS=$(LC_ALL=C date -d @$STAMP) # baked in as uname -v's date
+BUILD_TS=$(LC_ALL=C date -d "@$STAMP") # baked in as uname -v's date
 
 # Compile in parallel, then package serially: kbuild install targets race under -j
 # DPKG_FLAGS=-d skips the target-arch build-dep check (cross-building)

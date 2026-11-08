@@ -16,7 +16,7 @@ trap 'rm -rf "$tmp"' EXIT
 
 log INFO "Downloading Debian config"
 # chdist fetches the newest revision against Packages-only sources derived from the overlay's own
-chdist -d "$tmp" -a armel create debian > /dev/null
+chdist -d "$tmp" -a armel create debian >/dev/null
 awk -v RS= -v ORS='\n\n' '{sub(/Components:[^\n]*/, "Components: main"); print $0 "\nTargets: Packages"}' \
 	"$BASE_DIR/overlays/rootfs-base/etc/apt/sources.list.d/debian.sources" > "$tmp/debian/etc/apt/sources.list.d/debian.sources"
 chdist -d "$tmp" apt-get debian -qq update

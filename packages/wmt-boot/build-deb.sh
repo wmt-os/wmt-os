@@ -7,7 +7,6 @@ set -eu
 SRC="$BASE_DIR/packages/wmt-boot"
 DEBS="$BUILD_DIR/debs"
 STAMP=${STAMP:-$(date +%s)}
-# Hash the whole directory (recipe included) so any change re-keys the version
 HASH=$(find "$SRC" -type f | LC_ALL=C sort | xargs cat | sha256sum | cut -c1-12)
 VERSION="$STAMP+$HASH"
 
@@ -25,7 +24,7 @@ for f in "$SRC"/overlay/*; do
 done
 install -Dm755 "$SRC/postinst" "$staging/DEBIAN/postinst"
 install -Dm644 "$SRC/triggers" "$staging/DEBIAN/triggers"
-echo /etc/default/wmt-boot > "$staging/DEBIAN/conffiles"
+printf '%s\n' /etc/default/wmt-boot > "$staging/DEBIAN/conffiles"
 cat > "$staging/DEBIAN/control" <<EOF
 Package: wmt-boot
 Version: $VERSION

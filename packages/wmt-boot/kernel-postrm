@@ -1,6 +1,8 @@
 #!/bin/sh
 # Kernel removed (not an in-place upgrade): keep the boot slots pointing at
 # installed kernels. $1: the removed kernel's release
+set -e
+
 case " $DEB_MAINT_PARAMS " in *" remove "*|*" purge "*) ;; *) exit 0 ;; esac
 boot=/boot/uboot
 # Drop the rollback slot if its kernel was the one removed

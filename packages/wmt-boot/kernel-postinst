@@ -1,4 +1,6 @@
 #!/bin/sh
 # Kernel installed/upgraded: flag a rotate-to-newest, then request the (coalesced) deploy trigger
+set -e
+
 [ -d /run ] && : > /run/wmt-boot.deploy-newest
 dpkg-trigger --no-await wmt-deploy-boot
