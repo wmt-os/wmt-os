@@ -9,11 +9,11 @@ export CROSS_COMPILE="arm-linux-gnueabi-"
 export KCFLAGS="-march=armv5te -mtune=arm926ej-s"
 export KBUILD_BUILD_VERSION=1 # Deterministic uname -v '#1'
 
-export KERNEL_BRANCH="wmt-6.12.y"
-export KERNEL_REPO="https://github.com/wmt-os/linux-wmt.git"
+export KERNEL_BRANCH="${KERNEL_BRANCH:-wmt-6.12.y}"
+export KERNEL_REPO="${KERNEL_REPO:-https://github.com/wmt-os/linux-wmt.git}"
 
-export BUILDER_NAME="WMT OS Builder"
-export BUILDER_EMAIL="root@wmt-os.org"
+export BUILDER_NAME="${BUILDER_NAME:-WMT OS Builder}"
+export BUILDER_EMAIL="${BUILDER_EMAIL:-root@wmt-os.org}"
 
 export PROFILE="${PROFILE:-standard}" # Image profile: standard | desktop
 export XZ_LEVEL="${XZ_LEVEL:-9}" # Image compression level: xz 0-9[e]
