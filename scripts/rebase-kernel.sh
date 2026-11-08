@@ -22,10 +22,8 @@ if [ "$(printf '%s\n' "$CURRENT_KERNEL" "$UPSTREAM_KERNEL" | sort -V | tail -n 1
 fi
 
 log INFO "Rebasing $CURRENT_KERNEL -> $UPSTREAM_KERNEL"
-git config --get user.name >/dev/null || {
-	git config user.name "$BUILDER_NAME"
-	git config user.email "$BUILDER_EMAIL"
-}
+git config --get user.name >/dev/null || git config user.name "$BUILDER_NAME"
+git config --get user.email >/dev/null || git config user.email "$BUILDER_EMAIL"
 git fetch --no-tags "$UPSTREAM_REPO" "v$UPSTREAM_KERNEL"
 git rebase FETCH_HEAD
 log OK "Kernel rebased to $UPSTREAM_KERNEL"
